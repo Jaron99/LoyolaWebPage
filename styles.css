@@ -1,0 +1,138 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body{
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #f4f4f4;
+}
+
+.header{
+    width: 100%;
+    background-color: #fff;
+    display: flex;
+    justify-content: center;
+    border-bottom: 1px solid #ddd;
+}
+.container_header_inner{
+    width: 1440px;
+    height: 120px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 40px;
+}
+
+.Logo img{
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+}
+
+.nav_list{
+    list-style: none;
+    display: flex;
+    gap: 40px;
+}
+
+.nav_list a{
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+    transition: color 0.3s;
+}
+
+.nav_list a:hover{
+    color: #007BFF;
+}
+
+.header_login .btn-login{
+    text-decoration: none;
+    background-color: #007BFF;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+.header_login .btn-login:hover{
+    background-color: #0056b3;
+}
+/* Carrusel */
+.carrusel{
+    width: 100%;
+    max-width: 1440px;
+    margin:  auto;
+    overflow: hidden;
+    position: relative;
+    padding: 20px 0;
+}
+
+.slider {
+    display: flex;
+    width: 400%;
+    animation: slideAnimation 20s infinite;
+}
+
+.slide {
+    width: 100%;
+    flex-shrink: 0;
+}
+
+.slide img {
+    width: 25%;
+    height: 500px;
+    object-fit: cover;
+    display: block;
+    border-radius: 10px;
+}
+
+@keyframes slideAnimation {
+    0% { transform: translateX(0); }
+    20% { transform: translateX(0); }
+    25% { transform: translateX(-100%); }
+    45% { transform: translateX(-100%); }
+    50% { transform: translateX(-200%); }
+    70% { transform: translateX(-200%); }
+    75% { transform: translateX(-300%); }
+    95% { transform: translateX(-300%); }
+    100% { transform: translateX(0); }
+}
+
+ /* Body */
+.main-content{
+    width: 100%;
+    max-width: 1440px;
+    margin: auto;
+    margin-top: 20px;
+    padding: 0 40px;
+    background-color: #fdfdfd;
+    min-height: 500px;
+    text-align: center;
+}
+
+.main-content h2{ 
+    color: #061d26;
+    margin-bottom: 10px;
+    margin-top: 20px;
+}
+
+.main-content p{
+    color: #333;
+    line-height: 1.6;
+}
+
+/* Footer */
+
+.footer{
+    width: 100%;
+    background-color: #061d26;
+    color: #fff;
+    text-align: center;
+    padding: 20px;
+    font-size: 0.9rem;
+
+}
