@@ -1,74 +1,702 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Colegio Parroquial San Ignacio Loyola</title>
-    <link rel="stylesheet" href="styles.css">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Colegio Parroquial San Ignacio de Loyola - Pagina Principal </title>
+    <link rel="icon" type="image/png" href="Imagenes/Logo_bg.png">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;700;900&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+
+    <style>
+        :root {
+            /* Paleta de colores principal */
+            --verde-principal: #006a28;
+            --verde-oscuro: #004a1a;
+            --verde-claro: #e6ffe6;
+            --amarillo-acento: #ffd709;
+            --amarillo-oscuro: #ccac00;
+            --texto-oscuro: #2d2f2f;
+            --texto-gris: #5a5c5c;
+            --fondo-gris: #f6f6f6;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 90px;
+            /* <--- Añade esta línea */
+        }
+
+        body {
+            font-family: 'Lexend', sans-serif;
+            background-color: var(--fondo-gris);
+            color: var(--texto-oscuro);
+        }
+
+        .material-symbols-outlined {
+            vertical-align: middle;
+        }
+
+        /* --- NAVBAR --- */
+        .navbar-custom {
+            background-color: var(--verde-principal);
+            box-shadow: 0 4px 15px rgba(0, 106, 40, 0.3);
+        }
+
+        .navbar-brand {
+            font-weight: 900;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.85) !important;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--amarillo-acento) !important;
+        }
+
+        .nav-link.active {
+            border-bottom: 3px solid var(--amarillo-acento);
+            font-weight: 700;
+        }
+
+        .btn-acceso {
+            background-color: var(--amarillo-acento);
+            color: #453900;
+            font-weight: bold;
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+
+        .btn-acceso:hover {
+            transform: scale(1.05);
+            background-color: #e6c208;
+        }
+
+        /* --- ESTILOS DEL CARRUSEL --- */
+        .galeria-carrusel {
+            position: relative;
+            width: 100%;
+        }
+
+        .img-carrusel {
+            height: 75vh;
+            /* Ocupa el 50% del alto de la pantalla */
+            object-fit: cover;
+            /* Evita que la foto se estire o se deforme */
+            filter: brightness(0.8);
+            /* Oscurece un poquito la foto para que se vea elegante */
+        }
+
+        /* Cambiar el color de los puntitos al amarillo del colegio */
+        .carousel-indicators [data-bs-target] {
+            background-color: var(--amarillo-acento);
+            height: 4px;
+            /* Hace las rayitas un poco más gruesas */
+        }
+
+        /* --- HERO SECTION --- */
+        .hero-section {
+            position: relative;
+            min-height: 90vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .hero-bg-img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 106, 40, 0.6);
+            backdrop-filter: blur(10px);
+            z-index: 1;
+        }
+
+        .hero-gradient {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to top, rgba(0, 106, 40, 0.8), transparent);
+            z-index: 2;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 3;
+            max-width: 900px;
+        }
+
+        .btn-hero-primary {
+            background-color: var(--amarillo-acento);
+            color: #453900;
+            font-weight: bold;
+            padding: 15px 40px;
+            border-radius: 12px;
+            border: none;
+            transition: all 0.3s;
+        }
+
+        .btn-hero-primary:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(255, 215, 9, 0.3);
+        }
+
+        .btn-hero-outline {
+            background-color: transparent;
+            color: var(--amarillo-acento);
+            font-weight: bold;
+            padding: 12px 40px;
+            border-radius: 12px;
+            border: 3px solid var(--amarillo-acento);
+            transition: all 0.3s;
+        }
+
+        .btn-hero-outline:hover {
+            background-color: var(--amarillo-acento);
+            color: #453900;
+        }
+
+        /* --- RUTAS ACADÉMICAS (CARDS) --- */
+        .seccion-rutas {
+            padding: 100px 0;
+            background-color: #f0f1f1;
+        }
+
+        .linea-decorativa {
+            width: 80px;
+            height: 6px;
+            background-color: var(--amarillo-acento);
+            border-radius: 10px;
+            margin: 0 auto;
+        }
+
+        .card-ruta {
+            background: white;
+            border-radius: 15px;
+            border: none;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            height: 100%;
+            border-top: 8px solid var(--verde-principal);
+        }
+
+        .card-ruta:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 106, 40, 0.15);
+        }
+
+        .card-ruta.border-amarillo {
+            border-top-color: var(--amarillo-acento);
+        }
+
+        .icono-contenedor {
+            width: 70px;
+            height: 70px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            transition: transform 0.3s;
+        }
+
+        .card-ruta:hover .icono-contenedor {
+            transform: scale(1.1);
+        }
+
+        .bg-icono-verde {
+            background-color: var(--verde-claro);
+            color: var(--verde-principal);
+        }
+
+        .bg-icono-amarillo {
+            background-color: #fff8cc;
+            color: var(--amarillo-oscuro);
+        }
+
+        .enlace-ruta {
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        /* --- VIDA UNIVERSITARIA (BENTO GRID) --- */
+        .seccion-bento {
+            padding: 100px 0;
+            background-color: white;
+        }
+
+        .bento-card {
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .bento-main {
+            height: 100%;
+            min-height: 400px;
+            display: flex;
+            align-items: flex-end;
+        }
+
+        .bento-main img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.7s;
+        }
+
+        .bento-main:hover img {
+            transform: scale(1.05);
+        }
+
+        .bento-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to top, rgba(0, 106, 40, 0.95), transparent);
+        }
+
+        .bento-content {
+            position: relative;
+            z-index: 2;
+            padding: 2.5rem;
+            color: white;
+        }
+
+        .bento-news {
+            background-color: #e1e3e3;
+            padding: 2rem;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .bento-news:hover {
+            box-shadow: 0 10px 30px rgba(0, 106, 40, 0.1);
+        }
+
+        .metric-card-1 {
+            background: linear-gradient(135deg, var(--verde-principal), var(--verde-oscuro));
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .metric-card-2 {
+            background-color: var(--amarillo-acento);
+            color: #453900;
+            padding: 2rem;
+            text-align: center;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* --- CALL TO ACTION --- */
+        .seccion-cta {
+            position: relative;
+            padding: 120px 0;
+            background-color: var(--verde-oscuro);
+            overflow: hidden;
+        }
+
+        .cta-img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.15;
+        }
+
+        /* --- FOOTER --- */
+        .footer-custom {
+            background-color: var(--verde-principal);
+            border-top-left-radius: 3rem;
+            border-top-right-radius: 3rem;
+            padding: 4rem 2rem;
+            margin-top: 3rem;
+        }
+
+        .footer-link {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .footer-link:hover {
+            color: white;
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+    </style>
 </head>
 
 <body>
-<!-- HEADER (Encabezado del sitio) -->
-    <header class="header">
-        <div class="container_header_inner">
-            <!-- Logo -->
-            <a href="/" class="Logo">
-                <img src="Imagenes/Logo.png" alt="Logo" width="100" height="100">
-            </a>
 
-            <!-- Navegacion -->
-            <nav class="nav">
-                <ul class="nav_list">
-                    <li><a href="/">Inicio</a></li>
-                    <li><a href="/">Nosotros</a></li>
-                    <li><a href="/">Oferta Academica</a></li>
-                    <li><a href="/">Admisiones</a></li>
-                    <li><a href="/login.html">Estudiantes</a></li>
-                    <li><a href="/">Maestros</a></li>
-                    <li><a href="/">Noticias</a></li>
-                    <li><a href="/">Contacto</a></li>
+    <!-- BARRA DE NAVEGACION-->
+    <nav class="navbar navbar-expand-lg navbar-custom sticky-top py-3 px-4">
+        <div class="container-fluid">
+            <a href="/index.html">
+                <img src="/Imagenes/Logo_bg.png" , height="80" , width="80">
+            </a>
+            <button class="navbar-toggler border-0 shadow-none text-white" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarNav">
+                <span class="material-symbols-outlined fs-1">menu</span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+                <ul class="navbar-nav gap-lg-4 mt-3 mt-lg-0 text-center">
+                    <li class="nav-item"><a class="nav-link active" href="#">Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#nosotros">Nosotros</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#academico">Académico</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#ubicacion">Encuentranos</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#footer">Contacto</a></li>
                 </ul>
-            </nav>
-            <!-- Boton Login -->
-            <div class="header_login">
-                <a class="btn-login" href="/">Login</a>
+            </div>
+            <div class="d-none d-lg-block">
+                <a href="/login.html"><button class="btn btn-acceso px-4 py-2"> Acceso al Sistema </button> </a>
             </div>
         </div>
-    </header>
+    </nav>
 
- <!-- MAIN (contenido del sitio) -->
-    <main class="main-content">
-        <section class= "Carrusel">
-            <div class="slider">
-                <div class="slide active">
-                    <img src="Imagenes/Image1.jpg" alt="Imagen 1">
+    <!-- Galeria de Fotos-->
+    <section class="galeria-carrusel">
+        <div id="carruselColegio" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="3000">
+
+            <div class="carousel-indicators">
+                <button type="button" data-bs-target="#carruselColegio" data-bs-slide-to="0" class="active"
+                    aria-current="true" aria-label="Slide 1"></button>
+                <button type="button" data-bs-target="#carruselColegio" data-bs-slide-to="1"
+                    aria-label="Slide 2"></button>
+                <button type="button" data-bs-target="#carruselColegio" data-bs-slide-to="2"
+                    aria-label="Slide 3"></button>
+                <button type="button" data-bs-target="#carruselColegio" data-bs-slide-to="3"
+                    aria-label="Slide 4"></button>
+                <button type="button" data-bs-target="#carruselColegio" data-bs-slide-to="4"
+                    aria-label="Slide 5"></button>
+            </div>
+
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <img src="Imagenes/Image1.jpg" class="d-block w-100 img-carrusel">
                 </div>
-                <div class="slide">
-                    <img src="Imagenes/Image2.jpg" alt="Imagen 2">
+                <div class="carousel-item">
+                    <img src="Imagenes/Image2.jpg" class="d-block w-100 img-carrusel">
                 </div>
-                <div class="slide">
-                    <img src="Imagenes/Image3.jpg" alt="Imagen 3">
+                <div class="carousel-item">
+                    <img src="Imagenes/Image3.jpg" class="d-block w-100 img-carrusel">
                 </div>
-                <div class="slide">
-                    <img src="Imagenes/Image4.jpg" alt="Imagen 4">
+                <div class="carousel-item">
+                    <img src="Imagenes/Image4.jpg" class="d-block w-100 img-carrusel">
                 </div>
-                <div class="slide">
-                    <img src="Imagenes/Image5.jpg" alt="Imagen 5">
+                <div class="carousel-item">
+                    <img src="Imagenes/Image5.jpg" class="d-block w-100 img-carrusel">
                 </div>
             </div>
-        </section>
-        <section class="presentacion">
-            <h2>Bienvenidos al Colegio Parroquial San Ignacio de Loyola</h2>
-            <p>
-                Aquí se agregan imágenes, secciones informativas o lo que desees mostrar
-                en la parte principal del sitio.
+
+            <button class="carousel-control-prev" type="button" data-bs-target="#carruselColegio" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Anterior</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carruselColegio" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Siguiente</span>
+            </button>
+        </div>
+    </section>
+
+    <!-- SECCION HERO-->
+    <section id=hero class="hero-section">
+        <img alt="Campus" class="hero-bg-img"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuC2xogLilFBVQsdkqIsXmH-Djj-uxrseJdSlHcmejkI3MigW8IqDDCxnW0KWL6xhVSslclTjyaUA4ndoVoAQbTL0nai-Ih5KuFxINGDhk53EdAxWa5z6yFs2KL67tioh2BwrEZZR9D-fEN-nICQEX4snAMlhRc7CIIhzxsZ6DEMI0lzCd61imJ6kCFpILKp18waRd0r75-FnucOtQd33V9Eo5ctHOdwhS-ZmPZT2Yp5aDLTthxjI_p0vbIPGUBngtl3Tg9OIy6UWF_0" />
+        <div class="hero-overlay"></div>
+        <div class="hero-gradient"></div>
+        <div class="hero-content container px-3">
+            <h1 class="display-3 fw-black text-white mb-4" style="font-weight: 900;">
+                Hacedlo todo para <br />
+                <span style="color: var(--amarillo-acento);">mayor gloria de Dios</span>
+            </h1>
+            <p class="fs-4 mb-5" style="color: #cfffce;">
+                Transformando corazones y mentes a través de la excelencia académica, guiados por la fe, el amor y la
+                verdad de Cristo.
             </p>
-        </section>
-    </main>
-<!-- FOOTER -->
-    <footer class="footer">
-        <p>&copy; 2025 Colegio Parroquial San Ignacio Loyola. Todos los derechos reservados.</p>
+            <div class="d-flex flex-column flex-sm-row justify-content-center gap-3">
+                <a href="/login.html"><button class="btn-hero-primary">Ingresa</button> </a>
+                <a href="#nosotros"><button class="btn-hero-outline">Conoce más</button> </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECCION DE ACERCA DE NOSOTROS-->
+    <section id=nosotros class="seccion-rutas">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="display-5 fw-bold mb-3" style="color: var(--verde-principal);">Acerca de Nosotros</h2>
+                <div class="linea-decorativa"></div>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card-ruta">
+                        <div class="icono-contenedor bg-icono-verde">
+                            <span class="material-symbols-outlined fs-1">flag</span>
+                        </div>
+                        <h3 class="h4 fw-bold mb-3">Misión</h3>
+                        <p class="text-muted mb-4">Formar estudiantes comprometidos con valores cristianos y excelencia
+                            academica, promoviendo su desarrollo intregral.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card-ruta border-amarillo">
+                        <div class="icono-contenedor bg-icono-amarillo">
+                            <span class="material-symbols-outlined fs-1">visibility</span>
+                        </div>
+                        <h3 class="h4 fw-bold mb-3">Visión</h3>
+                        <p class="text-muted mb-4">Ser reconocidos por la calidad educativa y la formación ética y
+                            social de los estudiantes.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card-ruta">
+                        <div class="icono-contenedor bg-icono-verde">
+                            <span class="material-symbols-outlined fs-1">History_edu</span>
+                        </div>
+                        <h3 class="h4 fw-bold mb-3">Historia</h3>
+                        <p class="text-muted mb-4">Fundada desde 1964, es un colegio catolico comprometido con la
+                            formacion integral aplicando métodos que facilitan la experiencia de valores espirituales,
+                            éticos y sociales.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECCION DE VIDA ESTUDIANTIL-->
+    <section id=academico class="seccion-bento">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-end mb-5">
+                <div>
+                    <h2 class="display-5 fw-bold mb-3">Vida Estudiantil</h2>
+                    <div class="linea-decorativa" style="margin: 0; background-color: var(--verde-principal);"></div>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-lg-6">
+                    <div class="bento-card bento-main">
+                        <img src="Imagenes/news1.jpg">
+                        <div class="bento-overlay"></div>
+                        <div class="bento-content">
+                            <span class="badge rounded-pill text-dark mb-3 px-3 py-2"
+                                style="background-color: var(--amarillo-acento);">EVENTO PRINCIPAL</span>
+                            <h3 class="display-6 fw-bold mb-2">Inscripción para Sacramentos de Iniciación 2026</h3>
+                            <p class="fs-5" style="color: var(--verde-claro);">Marzo, 2026</p>
+                            <a href="https://www.facebook.com/photo?fbid=842568262149925&set=a.124768403929918"
+                                class="text-decoration-none fw-bold" style="color: var(--amarillo-acento);">
+                                Saber mas <span class="material-symbols-outlined fs-6">arrow_forward</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="row g-4 h-100">
+                        <div class="col-12 h-50">
+                            <div class="bento-card bento-news">
+                                <span class="fw-bold mb-2"
+                                    style="color: var(--verde-principal); font-size: 0.9rem;">NOTICIAS</span>
+                                <h3 class="h4 fw-bold mb-4">Inauguración de la Primera Aula Escolar de la Segunda Planta
+                                </h3>
+                                <a href="https://www.facebook.com/share/p/19uKkM9Zaw/"
+                                    class="text-decoration-none fw-bold" style="color: var(--amarillo-oscuro);">
+                                    Saber más <span class="material-symbols-outlined fs-6">arrow_forward</span>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 h-50">
+                            <div class="bento-card metric-card-1">
+                                <span class="display-4 fw-bold" style="color: var(--amarillo-acento);">+500</span>
+                                <span class="fw-medium mt-2">ESTUDIANTES ACTIVOS</span>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 h-50">
+                            <div class="bento-card metric-card-2">
+                                <span class="display-4 fw-bold" style="color: var(--verde-principal);">+40</span>
+                                <span class="fw-medium mt-2">AÑOS DE TRAYECTORIA</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="ubicacion" class="seccion-cta py-5" style="background-color: var(--verde-oscuro);">
+        <div class="container position-relative z-3 text-white mt-5 mb-5">
+            <div class="text-center mb-5">
+                <h2 class="display-4 fw-bold mb-3">Nuestra Ubicación</h2>
+                <p class="fs-5" style="color: var(--verde-claro);">
+                    Visítanos y conoce nuestras instalaciones. Estamos listos para recibirte.
+                </p>
+            </div>
+
+            <div class="row align-items-center g-5">
+                <div class="col-lg-5 text-start">
+                    <h3 class="h2 fw-bold mb-4" style="color: var(--amarillo-acento);">Colegio Parroquial San Ignacio de
+                        Loyola</h3>
+
+                    <div class="d-flex align-items-center mb-3">
+                        <span class="material-symbols-outlined fs-2 me-3"
+                            style="color: var(--amarillo-acento);">location_on</span>
+                        <p class="fs-5 mb-0">Entrada Pista Sabana Grande de los <br> semaforos 150 mts al Este, Managua.
+                        </p>
+                    </div>
+
+                    <div class="d-flex align-items-center mb-3">
+                        <span class="material-symbols-outlined fs-2 me-3"
+                            style="color: var(--amarillo-acento);">schedule</span>
+                        <p class="fs-5 mb-0">Lunes a Viernes: 7:00 AM - 5:00 PM</p>
+                    </div>
+
+                    <div class="d-flex align-items-center mb-5">
+                        <span class="material-symbols-outlined fs-2 me-3"
+                            style="color: var(--amarillo-acento);">call</span>
+                        <p class="fs-5 mb-0">+505 2280 6318 <br> +505 7841 2224</p>
+
+                    </div>
+
+                    <a href="https://maps.app.goo.gl/mLUPCbCdgnw25nea9"><button
+                            class="btn-hero-primary fs-5 px-4 py-2">Cómo llegar</button> </a>
+                </div>
+
+                <div class="col-lg-7">
+                    <div class="ratio ratio-16x9 rounded-4 overflow-hidden shadow-lg"
+                        style="border: 4px solid var(--verde-principal);">
+                        <iframe
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1468.8459169261464!2d-86.20322008579356!3d12.125126406482037!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8f73ff29677dddeb%3A0x2cc739fb51eac16e!2sColegio%20carretera%20a%20sabana%20grande%2Csan%20ignacio%20del%20loyola!5e0!3m2!1ses-419!2sni!4v1776744337763!5m2!1ses-419!2sni"
+                            width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"
+                            referrerpolicy="no-referrer-when-downgrade">
+                        </iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!--FOOTER-->
+    <footer class="footer-custom mt-auto">
+        <div class="container">
+            <div class="row g-5 mb-5">
+
+                <div class="col-lg-4 text-center text-lg-start">
+                    <h3 class="fs-2 fw-bold mb-3" style="color: var(--amarillo-acento);">
+                        Colegio Parroquial
+                    </h3>
+                    <p class="text-white-50" style="font-size: 0.95rem; line-height: 1.6;">
+                        Formando líderes íntegros con pasión por el conocimiento y fundamentados en los valores
+                        cristianos. Educación en movimiento para un futuro brillante.
+                    </p>
+                </div>
+
+                <div class="col-lg-4 text-center">
+                    <h4 class="text-white fs-5 fw-bold mb-4">Enlaces Rápidos</h4>
+                    <div class="d-flex flex-column gap-3">
+                        <a class="footer-link d-inline-block" href="#">Inicio</a>
+                        <a class="footer-link d-inline-block" href="#nosotros">Nuestra Historia</a>
+                        <a class="footer-link d-inline-block" href="#academico">Vida Estudiantil</a>
+                        <a class="footer-link d-inline-block" href="#ubicacion">Ubicación y Contacto</a>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 text-center text-lg-end">
+                    <h4 class="text-white fs-5 fw-bold mb-4">Conéctate con nosotros</h4>
+                    <p class="text-white-50 mb-2">contacto@colegioparroquial.edu.ni</p>
+                    <p class="text-white-50 mb-4">+505 7841 2224</p>
+
+                    <div class="d-flex justify-content-center justify-content-lg-end gap-3">
+
+                        <a href="https://www.facebook.com/profile.php?id=100091902770353" class="btn-social"
+                            aria-label="Facebook">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor"
+                                viewBox="0 0 16 16">
+                                <path
+                                    d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951" />
+                            </svg>
+                        </a>
+
+                        <a href="#" class="btn-social" aria-label="Instagram">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor"
+                                viewBox="0 0 16 16">
+                                <path
+                                    d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.9 3.9 0 0 0-1.417.923A3.9 3.9 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.9 3.9 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.9 3.9 0 0 0-.923-1.417A3.9 3.9 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.036 1.204.166 1.486.275.373.145.64.319.92.599s.453.546.598.92c.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.5 2.5 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.5 2.5 0 0 1-.92-.598 2.5 2.5 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233s.008-2.388.046-3.231c.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92s.546-.453.92-.598c.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92m-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217m0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334" />
+                            </svg>
+                        </a>
+
+                        <a href="#" class="btn-social" aria-label="WhatsApp">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor"
+                                viewBox="0 0 16 16">
+                                <path
+                                    d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c-.003 1.396.366 2.76 1.06 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c.004-3.639 2.961-6.592 6.602-6.592 1.76 0 3.415.687 4.66 1.932A6.53 6.53 0 0 1 14.52 8c-.004 3.639-2.961 6.592-6.602 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-top mb-4" style="border-color: rgba(255,255,255,0.1) !important;"></div>
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
+                <div class="text-white-50 small mb-3 mb-md-0">
+                    © 2026 Colegio Parroquial. Todos los derechos reservados.
+                </div>
+                <div class="text-white-50 small">
+                    Desarrollado con excelencia para la comunidad.
+                </div>
+            </div>
+        </div>
     </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>
