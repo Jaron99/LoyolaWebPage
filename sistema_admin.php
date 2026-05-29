@@ -1,3 +1,12 @@
+<?php
+session_start();
+// Si no hay una sesión activa o el rol no es admin, lo expulsamos al login
+if (!isset($_SESSION["rol"]) || $_SESSION["rol"] != "admin") {
+    header("Location: login.php");
+    exit();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>

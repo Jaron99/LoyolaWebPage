@@ -12,7 +12,8 @@ class Usuarios{
     public function login ($usuario, $contrasena) {
         $sql = "SELECT * FROM usuarios WHERE usuario = '$usuario' AND contrasena = '$contrasena' AND estado = '1'";
         $result = $this->conexion->query($sql);
-
+        
+        return $result;
     }
 }
 
