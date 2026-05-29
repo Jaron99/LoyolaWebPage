@@ -1,14 +1,13 @@
 <?php
 session_start();
 
-include_once "Models/usuarios_model.php";
+include_once "Models/usuarios.model.php";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $correo = $_POST["correo"];
     $contrasena = $_POST["contrasena"];
 
     $objUsuario= new Usuarios();
-    // OJO: Asegúrate de que en tu archivo usuarios_model.php la función se llame "login" y no "validarLogin"
     $user = $objUsuario->login($correo, $contrasena);
 
     if ($user && $user->num_rows > 0) {
@@ -20,18 +19,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         if ($fila["rol"] == "admin") {
             header("Location: sistema_admin.php");
-            exit(); // <-- Agregado
+            exit();
         } elseif ($fila["rol"] == "estudiante") {
             header("Location: sistema_estudiante.php");
-            exit(); // <-- Agregado
+            exit();
         } elseif ($fila["rol"] == "docente") {
             header("Location: sistema_docente.php");
-            exit(); // <-- Agregado
+            exit();
         } else {
             $error = "Rol de usuario no reconocido en el sistema.";
         }
     } else {
-        // <-- AHORA SÍ: Si la clave está mal, entra aquí
         $error = "Credenciales incorrectas o usuario inactivo.";
     }
 }

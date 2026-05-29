@@ -5,6 +5,11 @@ if (!isset($_SESSION["rol"]) || $_SESSION["rol"] != "admin") {
     header("Location: login.php");
     exit();
 }
+
+    include_once "Models/admin.model.php";
+
+    $adminModel = new Admin();
+    $usuarios = $adminModel->getUsuarios();
 ?>
 
 <!DOCTYPE html>
@@ -183,10 +188,8 @@ if (!isset($_SESSION["rol"]) || $_SESSION["rol"] != "admin") {
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end shadow border-0">
                             <li><a class="dropdown-item py-2" href="#"><i class="bi bi-person me-2"></i> Mi Perfil</a></li>
-                            <li><a class="dropdown-item py-2" href="sistema.html"><i class="bi bi-person me-2"></i> Volver a Profesor</a></li>
-                            <li><a class="dropdown-item py-2" href="sistema_est.html"><i class="bi bi-person me-2"></i> Cambiar a Estudiante</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item py-2 text-danger fw-bold" href="login.html"><i class="bi bi-box-arrow-right me-2"></i> Cerrar Sesión</a></li>
+                            <li><a class="dropdown-item py-2 text-danger fw-bold" href="logout.php"><i class="bi bi-box-arrow-right me-2"></i> Cerrar Sesión</a></li>
                         </ul>
                     </div>
                 </div>

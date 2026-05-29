@@ -1,7 +1,7 @@
 <?php
 session_start();
-// Si no hay una sesión activa o el rol no es admin, lo expulsamos al login
-if (!isset($_SESSION["rol"]) || $_SESSION["rol"] != "admin") {
+// Si no hay una sesión activa o el rol no es docente, lo expulsamos al login
+if (!isset($_SESSION["rol"]) || $_SESSION["rol"] != "docente") {
     header("Location: login.php");
     exit();
 }
@@ -191,7 +191,7 @@ if (!isset($_SESSION["rol"]) || $_SESSION["rol"] != "admin") {
                             <li><a class="dropdown-item py-2" href="#"><i class="bi bi-gear me-2"></i> Configuración</a></li>
                             <li><a class="dropdown-item py-2" href="/sistema_admin.html"><i class="bi bi-gear me-2"></i> Cambiar a Admin</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item py-2 text-danger fw-bold" href="login.html"><i class="bi bi-box-arrow-right me-2"></i> Cerrar Sesión</a></li>
+                            <li><a class="dropdown-item py-2 text-danger fw-bold" href="logout.php"><i class="bi bi-box-arrow-right me-2"></i> Cerrar Sesión</a></li>
                         </ul>
                     </div>
                 </div>
