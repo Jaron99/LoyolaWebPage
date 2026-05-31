@@ -2,30 +2,34 @@
 
 include_once "conexion.model.php";
 
-class Admin {
+class Admin
+{
     private $conexion;
-
-    public function __construct() {
+    // Constructor para establecer la conexión a la base de datos
+    public function __construct()
+    {
         $this->conexion = Conexion::connect();
     }
 
     //Funcion para obtener todos los usuarios 
-    public function getUsuarios() {
+    public function getUsuarios()
+    {
         $sql = "SELECT * FROM usuarios";
         $result = $this->conexion->query($sql);
-        
+
         return $result;
     }
-
-    public function obtenerResumenDashboard() {
+    // Función para obtener el resumen del dashboard
+    public function obtenerResumenDashboard()
+    {
         $sql = "CALL sp_obtener_resumen_dashboard()";
         $result = $this->conexion->query($sql);
 
         if ($result) {
             $resumen = $result->fetch_assoc();
             $result->free();
-            
-            while ($this->conexion->more_results() && $this->conexion->next_result()){
+
+            while ($this->conexion->more_results() && $this->conexion->next_result()) {
                 if ($extraResult = $this->conexion->store_result()) {
                     $extraResult->free();
                 }
@@ -36,7 +40,9 @@ class Admin {
         return ['total_alumnos' => 0, 'total_profesores' => 0, 'periodo_actual' => 'N/A'];
     }
 
-    public function obtenerNivelesAcademicos() {
+    // Función para obtener los niveles académicos únicos (modalidades)
+    public function obtenerNivelesAcademicos()
+    {
         $sql = "SELECT DISTINCT modalidad FROM grado where modalidad IS NOT NULL";
         $result = $this->conexion->query($sql);
 
@@ -49,12 +55,23 @@ class Admin {
         return $niveles;
     }
 
-    public function obtenerGradosSeccion ($filtronivel="") {
-        $sql = "SELECT * FROM vw_grados_secciones";
+    // Función para obtener grados y secciones con filtros 
+    public function obtenerGradosSeccion($filtronivel = "", $busqueda = "")
+    {
+        $sql = "SELECT * FROM vw_grados_secciones where 1=1"; // Empezamos con una condición siempre verdadera para facilitar la concatenación
 
+        // Si el usuario selecciono una modalidad en el combo box
         if (!empty($filtronivel)) {
             $nivelseguro = $this->conexion->real_escape_string($filtronivel);
-            $sql .= " WHERE modalidad = '$nivelseguro'";
+            $sql .= " AND modalidad = '$nivelseguro'";
+        }
+
+        // Si el usuario escribe algo en el buscador
+        if (!empty($busqueda)) {
+            $busquedasegura = $this->conexion->real_escape_string($busqueda);
+            $sql .= " AND (nombre_grad LIKE '%$busquedasegura%' OR 
+                        nombre_sec LIKE '%$busquedasegura%' OR 
+                        modalidad LIKE '%$busquedasegura%')";
         }
 
         $result = $this->conexion->query($sql);
@@ -67,4 +84,61 @@ class Admin {
         }
         return $lista;
     }
+
+    //CRUD de usuarios
+    public function crearUsuario()
+    {
+        // Aquí iría la lógica para crear un usuario
+    }
+    public function editarUsuario()
+    {
+        // Aquí iría la lógica para editar un usuario
+    }
+
+    public function eliminarUsuario()
+    {
+        // Aquí iría la lógica para eliminar un usuario
+    }
+
+    //CRUD de Alumnos y Profesores
+    public function crearAlumno()
+    {
+        // Aquí iría la lógica para crear un alumno
+    }
+    public function editarAlumno()
+    {
+        // Aquí iría la lógica para editar un alumno
+    }
+
+    public function eliminarAlumno()
+    {
+        // Aquí iría la lógica para eliminar un alumno
+    }
+    public function crearProfesor()
+    {
+        // Aquí iría la lógica para crear un profesor
+    }
+    public function editarProfesor()
+    {
+        // Aquí iría la lógica para editar un profesor
+    }
+    public function eliminarProfesor()
+    {
+        // Aquí iría la lógica para eliminar un profesor
+    }
+
+    //CRUD de Grados y Secciones
+    public function crearGradoSeccion()
+    {
+        // Aquí iría la lógica para crear un grado y sección
+    }
+    public function editarGradoSeccion()
+    {
+        // Aquí iría la lógica para editar un grado y sección
+    }
+    public function eliminarGradoSeccion()
+    {
+        // Aquí iría la lógica para eliminar un grado y sección
+    }
+
 }
