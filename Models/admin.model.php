@@ -12,13 +12,47 @@ class Admin
     }
 
     //Funcion para obtener todos los usuarios 
-    public function getUsuarios()
+   //Funcion para obtener todos los usuarios 
+    public function getUsuarios($filtrorol = "", $busquedaUsuarios = "")
     {
-        $sql = "SELECT * FROM usuarios";
+        $sql = "SELECT * FROM usuarios WHERE 1=1";
+        // Si el usuario selecciona un rol en el combo box
+        if (!empty($filtrorol)) {
+            $rolSeguro = $this->conexion->real_escape_string($filtrorol);
+            $sql .= " AND rol = '$rolSeguro'";
+        }
+
+        // Si el usuario escribe algo en el buscador
+        if (!empty($busquedaUsuarios)) {
+            $busquedaSegura = $this->conexion->real_escape_string($busquedaUsuarios);
+            $sql .= " AND usuario LIKE '%$busquedaSegura%'";
+        }
+
+        $result = $this->conexion->query($sql);
+        $lista = [];
+        if ($result) {
+            while ($row = $result->fetch_assoc()) {
+                $lista[] = $row; 
+            }
+        }
+        return $lista;
+    }
+
+    // Función para obtener los roles de los usuarios
+    public function obtenerRolesUsuarios()
+    {
+        $sql = "SELECT DISTINCT rol FROM usuarios WHERE rol IS NOT NULL";
         $result = $this->conexion->query($sql);
 
-        return $result;
+        $roles = [];
+        if ($result) {
+            while ($row = $result->fetch_assoc()) {
+                $roles[] = $row['rol'];
+            }
+        }
+        return $roles;
     }
+
     // Función para obtener el resumen del dashboard
     public function obtenerResumenDashboard()
     {
@@ -86,18 +120,41 @@ class Admin
     }
 
     //CRUD de usuarios
-    public function crearUsuario()
+    public function cambiarcontrasena($usuario, $nuevacontrasena)
     {
-        // Aquí iría la lógica para crear un usuario
+        $userSeguro = $this->conexion->real_escape_string($usuario);
+        $passHash = password_hash($nuevacontrasena, PASSWORD_DEFAULT);
+
+        $sql = "UPDATE usuarios SET contrasena = '$passHash' WHERE usuario = '$userSeguro'";
+
+        if ($this->conexion->query($sql)) {
+            return true; // Contraseña actualizada exitosamente
+        } else {
+            return false; // Error al actualizar la contraseña
+        }
     }
-    public function editarUsuario()
+    public function bloquearUsuario($usuario, $nuevoestado)
     {
-        // Aquí iría la lógica para editar un usuario
+        $userSeguro = $this->conexion->real_escape_string($usuario);
+        $estadoSeguro = ($nuevoestado == '1') ? '1' : '0'; 
+        $sql = "UPDATE usuarios SET estado = '$estadoSeguro' WHERE usuario = '$userSeguro'";
+        return $this->conexion->query($sql);
+    }  
+    public function crearUsuario($usuario, $contrasena, $rol)
+    {
+        $userSeguro = $this->conexion->real_escape_string($usuario);
+        $passHash = password_hash($contrasena, PASSWORD_DEFAULT);
+        $rolSeguro = $this->conexion->real_escape_string($rol);
+
+        $sql = "INSERT INTO usuarios (usuario, contrasena, rol, estado) VALUES ('$userSeguro', '$passHash', '$rolSeguro', '1')";
+        return $this->conexion->query($sql);
     }
 
-    public function eliminarUsuario()
+    public function eliminarUsuario($usuario)
     {
-        // Aquí iría la lógica para eliminar un usuario
+        $usuarioSeguro = $this->conexion->real_escape_string($usuario);
+        $sql = "DELETE FROM usuarios WHERE usuario = '$usuarioSeguro'";
+        return $this->conexion->query($sql);
     }
 
     //CRUD de Alumnos y Profesores

@@ -5,32 +5,43 @@ include_once "Models/usuarios.model.php";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $correo = $_POST["correo"];
-    $contrasena = $_POST["contrasena"];
+    $contrasena_ingresada = $_POST["contrasena"];
 
     $objUsuario= new Usuarios();
-    $user = $objUsuario->login($correo, $contrasena);
+    
+    // 1. Buscamos al usuario en la BD solo por su nombre
+    $user = $objUsuario->login($correo);
 
     if ($user && $user->num_rows > 0) {
         $fila = $user->fetch_assoc();
 
-        $_SESSION["user_usuario"] = $fila["id_usuario"];
-        $_SESSION["usuario"] = $fila["usuario"];
-        $_SESSION["rol"] = $fila["rol"];
+        $hash_guardado = $fila["contrasena"]; 
 
-        if ($fila["rol"] == "admin") {
-            header("Location: sistema_admin.php");
-            exit();
-        } elseif ($fila["rol"] == "estudiante") {
-            header("Location: sistema_estudiante.php");
-            exit();
-        } elseif ($fila["rol"] == "docente") {
-            header("Location: sistema_docente.php");
-            exit();
+        if (password_verify($contrasena_ingresada, $hash_guardado)) {
+            
+            $_SESSION["user_usuario"] = $fila["id_usuario"];
+            $_SESSION["usuario"] = $fila["usuario"];
+            $_SESSION["rol"] = $fila["rol"];
+
+            if ($fila["rol"] == "admin") {
+                header("Location: sistema_admin.php");
+                exit();
+            } elseif ($fila["rol"] == "estudiante") {
+                header("Location: sistema_estudiante.php");
+                exit();
+            } elseif ($fila["rol"] == "docente") {
+                header("Location: sistema_docente.php");
+                exit();
+            } else {
+                $error = "Rol de usuario no reconocido en el sistema.";
+            }
         } else {
-            $error = "Rol de usuario no reconocido en el sistema.";
+            // El usuario existe, pero la contraseña no coincide
+            $error = "Contraseña incorrecta.";
         }
     } else {
-        $error = "Credenciales incorrectas o usuario inactivo.";
+        // No se encontró el nombre de usuario
+        $error = "El usuario no existe o está inactivo.";
     }
 }
 ?>

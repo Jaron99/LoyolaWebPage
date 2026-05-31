@@ -10,19 +10,73 @@ if (!isset($_SESSION["rol"]) || $_SESSION["rol"] != "admin") {
 include_once "Models/admin.model.php";
 $adminModel = new Admin();
 
-// Obtenemos los datos necesarios para mostrar en el dashboard y otras vistas
-$usuarios = $adminModel->getUsuarios();
+// Obtenemos los datos globales para el dashboard y los combos
 $resumenDashboard = $adminModel->obtenerResumenDashboard();
 $nivelesAcademicos = $adminModel->obtenerNivelesAcademicos();
+$listaRoles = $adminModel->obtenerRolesUsuarios();
 
 // Determinamos qué pestaña está activa según el parámetro GET 'tab'
 $active = isset($_GET['tab']) ? $_GET['tab'] : 'panel';
+
+
+// FILTROS PARA GRADOS Y SECCIONES
 $filtronivel = isset($_GET['nivel']) ? $_GET['nivel'] : "";
 $busqueda = isset($_GET['busqueda']) ? $_GET['busqueda'] : "";
-
-// Obtenemos la lista de grados y secciones según los filtros aplicados
 $listaGrados = $adminModel->obtenerGradosSeccion($filtronivel, $busqueda);
 
+// FILTROS PARA USUARIOS
+$filtrorol = isset($_GET['rol']) ? $_GET['rol'] : "";
+$busquedaUsuarios = isset($_GET['busquedaUsuarios']) ? $_GET['busquedaUsuarios'] : "";
+$usuarios = $adminModel->getUsuarios($filtrorol, $busquedaUsuarios); // Trae los usuarios filtrados
+
+//PROCESAR FORMULARIOS
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['accion'])) {
+
+    // Acción: Editar Contraseña
+    if ($_POST['accion'] == 'editar_password') {
+        $usuarioAEditar = $_POST['usuario_edit'];
+        $nuevaPassword = $_POST['nueva_password'];
+
+        // Llamamos a la función del modelo
+        $adminModel->cambiarcontrasena($usuarioAEditar, $nuevaPassword);
+
+        // Recargamos la página limpiamente
+        header("Location: sistema_admin.php?tab=usuarios");
+        exit();
+    }
+
+    //Acción: Bloquear Usuario
+    if ($_POST['accion'] == 'bloquear_usuario') {
+        $usuario = $_POST['usuario_estado'];
+        $nuevoestado = $_POST['nuevoestado'];
+
+        $adminModel->bloquearUsuario($usuario, $nuevoestado);
+
+        header("Location: sistema_admin.php?tab=usuarios");
+        exit();
+    }
+
+    // Acción: Eliminar Usuario
+    if ($_POST['accion'] == 'eliminar_usuario') {
+        $usuario = $_POST['usuario_eliminar'];
+
+        $adminModel->eliminarUsuario($usuario);
+
+        header("Location: sistema_admin.php?tab=usuarios");
+        exit();
+
+        // Acción: Crear Nuevo Usuario
+    } elseif ($_POST['accion'] == 'crear_usuario') {
+        $nuevoUsuario = $_POST['nuevo_usuario'];
+        $nuevaPassword = $_POST['nueva_password'];
+        $rolUsuario = $_POST['nuevo_rol'];
+
+        $adminModel->crearUsuario($nuevoUsuario, $nuevaPassword, $rolUsuario);
+
+        header("Location: sistema_admin.php?tab=usuarios");
+        exit();
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -247,9 +301,10 @@ $listaGrados = $adminModel->obtenerGradosSeccion($filtronivel, $busqueda);
                 <div class="tab-pane fade <?php echo ($active == 'panel') ? 'show active' : ''; ?>" id="vista-panel">
                     <h2 class="fw-bold text-dark mb-4">Panel Principal</h2>
                     <div class="row">
+                        <!-- // Tarjetas de Resumen -->
                         <div class="col-lg-4 mb-4">
                             <div class="d-flex flex-column gap-3 h-100">
-
+                                <!-- Tarjeta de Total Alumnos -->
                                 <div class="card border-0 shadow-sm flex-fill" style="border-left: 5px solid #ffc107 !important;">
                                     <div class="card-body p-4 d-flex flex-column justify-content-center">
                                         <div class="d-flex justify-content-between align-items-center">
@@ -264,6 +319,7 @@ $listaGrados = $adminModel->obtenerGradosSeccion($filtronivel, $busqueda);
                                     </div>
                                 </div>
 
+                                <!-- Tarjeta de Total Docentes -->
                                 <div class="card border-0 shadow-sm flex-fill" style="border-left: 5px solid #198754 !important;">
                                     <div class="card-body p-4 d-flex flex-column justify-content-center">
                                         <div class="d-flex justify-content-between align-items-center">
@@ -278,6 +334,7 @@ $listaGrados = $adminModel->obtenerGradosSeccion($filtronivel, $busqueda);
                                     </div>
                                 </div>
 
+                                <!-- Tarjeta de Periodo Actual -->
                                 <div class="card border-0 shadow-sm flex-fill text-white" style="background-color: #198754;">
                                     <div class="card-body p-4 d-flex flex-column justify-content-center">
                                         <div class="d-flex justify-content-between align-items-center">
@@ -294,7 +351,7 @@ $listaGrados = $adminModel->obtenerGradosSeccion($filtronivel, $busqueda);
 
                             </div>
                         </div>
-
+                        <!-- Accesos Rápidos -->
                         <div class="col-lg-8 mb-4">
                             <div class="card border-0 shadow-sm h-100 bg-light">
                                 <div class="card-body p-4">
@@ -302,53 +359,64 @@ $listaGrados = $adminModel->obtenerGradosSeccion($filtronivel, $busqueda);
 
                                     <div class="d-flex flex-column gap-3">
 
-                                        <button class="btn btn-white text-start p-3 shadow-sm border-0 bg-white" style="transition: all 0.3s;">
+                                        <button class="btn text-start p-3 shadow-sm border-0 bg-white opacity-50" style="cursor: not-allowed;" disabled>
                                             <div class="d-flex align-items-center">
-                                                <div class="rounded-circle p-3 me-4" style="background-color: rgba(25, 135, 84, 0.1); color: #198754;">
+                                                <div class="rounded-circle p-3 me-4" style="background-color: rgba(108, 117, 125, 0.1); color: #6c757d;">
                                                     <i class="bi bi-person-plus fs-3"></i>
                                                 </div>
-                                                <div>
-                                                    <h5 class="fw-bold text-dark mb-1">Matricular Nuevo Alumno</h5>
+                                                <div class="flex-grow-1">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <h5 class="fw-bold text-secondary mb-1">Matricular Nuevo Alumno</h5>
+                                                        <span class="badge bg-secondary" style="font-size: 0.7rem;">Próximamente</span>
+                                                    </div>
                                                     <small class="text-muted">Inscribir a un estudiante en un grado y sección para este año escolar.</small>
                                                 </div>
                                             </div>
                                         </button>
 
-                                        <button class="btn btn-white text-start p-3 shadow-sm border-0 bg-white" style="transition: all 0.3s;">
+                                        <button class="btn text-start p-3 shadow-sm border-0 bg-white opacity-50" style="cursor: not-allowed;" disabled>
                                             <div class="d-flex align-items-center">
-                                                <div class="rounded-circle p-3 me-4" style="background-color: rgba(255, 193, 7, 0.1); color: #d39e00;">
+                                                <div class="rounded-circle p-3 me-4" style="background-color: rgba(108, 117, 125, 0.1); color: #6c757d;">
                                                     <i class="bi bi-person-badge fs-3"></i>
                                                 </div>
-                                                <div>
-                                                    <h5 class="fw-bold text-dark mb-1">Registrar Nuevo Docente</h5>
+                                                <div class="flex-grow-1">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <h5 class="fw-bold text-secondary mb-1">Registrar Nuevo Docente</h5>
+                                                        <span class="badge bg-secondary" style="font-size: 0.7rem;">Próximamente</span>
+                                                    </div>
                                                     <small class="text-muted">Añadir personal al sistema y asignarles sus respectivas materias.</small>
                                                 </div>
                                             </div>
                                         </button>
 
-                                        <button class="btn btn-white text-start p-3 shadow-sm border-0 bg-white" style="transition: all 0.3s;">
+                                        <button class="btn text-start p-3 shadow-sm border-0 bg-white opacity-50" style="cursor: not-allowed;" disabled>
                                             <div class="d-flex align-items-center">
-                                                <div class="rounded-circle p-3 me-4 bg-light text-secondary">
+                                                <div class="rounded-circle p-3 me-4" style="background-color: rgba(108, 117, 125, 0.1); color: #6c757d;">
                                                     <i class="bi bi-file-earmark-spreadsheet fs-3"></i>
                                                 </div>
-                                                <div>
-                                                    <h5 class="fw-bold text-dark mb-1">Reporte de Calificaciones</h5>
+                                                <div class="flex-grow-1">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <h5 class="fw-bold text-secondary mb-1">Reporte de Calificaciones</h5>
+                                                        <span class="badge bg-secondary" style="font-size: 0.7rem;">Próximamente</span>
+                                                    </div>
                                                     <small class="text-muted">Exportar boletines o auditar notas ingresadas por los profesores.</small>
                                                 </div>
                                             </div>
                                         </button>
 
-                                        <button class="btn btn-white text-start p-3 shadow-sm border-0 bg-white" style="transition: all 0.3s;">
-                                            <div class="d-flex align-items-center">
-                                                <div class="rounded-circle p-3 me-4 bg-light text-secondary">
-                                                    <i class="bi bi-database-down fs-3"></i>
+                                        <a href="sistema_admin.php?tab=respaldo" class="text-decoration-none">
+                                            <button class="btn btn-white text-start p-3 shadow-sm border-0 bg-white w-100" style="transition: all 0.3s;">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="rounded-circle p-3 me-4" style="background-color: rgba(25, 135, 84, 0.1); color: #198754;">
+                                                        <i class="bi bi-database-down fs-3"></i>
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="fw-bold text-dark mb-1">Copia de Seguridad</h5>
+                                                        <small class="text-muted">Ir al panel para generar y descargar un respaldo completo de la base de datos.</small>
+                                                    </div>
                                                 </div>
-                                                <div>
-                                                    <h5 class="fw-bold text-dark mb-1">Copia de Seguridad</h5>
-                                                    <small class="text-muted">Generar y descargar un respaldo completo de la base de datos.</small>
-                                                </div>
-                                            </div>
-                                        </button>
+                                            </button>
+                                        </a>
 
                                     </div>
                                 </div>
@@ -366,28 +434,39 @@ $listaGrados = $adminModel->obtenerGradosSeccion($filtronivel, $busqueda);
                             <h2 class="fw-bold text-dark mb-0">Gestión de Usuarios</h2>
                             <p class="text-muted mb-0">Administre los accesos, contraseñas y roles del sistema.</p>
                         </div>
-                        <button class="btn text-white shadow-sm fw-semibold" style="background-color: var(--verde-institucional);" data-bs-toggle="modal" data-bs-target="#modalNuevoUsuario">
-                            <i class="bi bi-person-plus-fill me-2"></i> Nuevo Usuario
+                        <button class="btn text-white px-4 shadow-sm" style="background-color: var(--verde-institucional);" data-bs-toggle="modal" data-bs-target="#modalNuevoUsuario">
+                            <i class="bi bi-plus-lg me-1"></i> Nuevo Usuario
                         </button>
                     </div>
+                    <!-- Filtros -->
                     <div class="card border-0 shadow-sm mb-4 bg-white">
                         <div class="card-body p-3">
-                            <form>
+                            <form method="GET" action="sistema_admin.php">
+                                <input type="hidden" name="tab" value="usuarios">
                                 <div class="row g-2">
                                     <div class="col-md-4">
-                                        <select class="form-select border-0 bg-light">
-                                            <option value="" selected>Todos los Roles</option>
-                                            <option value="admin">Administradores</option>
-                                            <option value="docente">Docentes</option>
-                                            <option value="estudiante">Estudiantes</option>
+                                        <select name="rol" class="form-select border-0 bg-light" onchange="this.form.submit()">
+                                            <option value="">Todos los Roles</option>
+                                            <?php
+                                            if (!empty($listaRoles)):
+                                                foreach ($listaRoles as $rol_db):
+                                                    $seleccionado = ($filtrorol == $rol_db) ? 'selected' : '';
+                                            ?>
+                                                    <option value="<?php echo htmlspecialchars($rol_db); ?>" <?php echo $seleccionado; ?>>
+                                                        <?php echo ucfirst(htmlspecialchars($rol_db)); ?>
+                                                    </option>
+                                            <?php
+                                                endforeach;
+                                            endif;
+                                            ?>
                                         </select>
                                     </div>
 
                                     <div class="col-md-8">
                                         <div class="input-group">
                                             <span class="input-group-text border-0 bg-light text-muted"><i class="bi bi-search"></i></span>
-                                            <input type="text" class="form-control border-0 bg-light" placeholder="Buscar por nombre de usuario...">
-                                            <button type="button" class="btn text-white px-4 shadow-sm" style="background-color: var(--verde-institucional);">Buscar</button>
+                                            <input type="text" name="busquedaUsuarios" class="form-control border-0 bg-light" placeholder="Buscar por nombre de usuario..." value="<?php echo htmlspecialchars($busquedaUsuarios); ?>">
+                                            <button type="submit" class="btn text-white px-4 shadow-sm" style="background-color: var(--verde-institucional);">Buscar</button>
                                         </div>
                                     </div>
                                 </div>
@@ -416,15 +495,14 @@ $listaGrados = $adminModel->obtenerGradosSeccion($filtronivel, $busqueda);
                                                             <div class="bg-light rounded-circle p-2 me-3 text-secondary">
                                                                 <i class="bi bi-person-fill fs-5"></i>
                                                             </div>
-                                                            <?php echo htmlspecialchars($user['usuario'] ?? $user['username'] ?? 'Desconocido'); ?>
+                                                            <?php echo htmlspecialchars($user['usuario']); ?>
                                                         </div>
                                                     </td>
 
                                                     <td>
                                                         <?php
                                                         $rol = strtolower($user['rol'] ?? '');
-                                                        $claseBadge = 'bg-secondary'; // Por defecto
-
+                                                        $claseBadge = 'bg-secondary';
                                                         if ($rol == 'admin') $claseBadge = 'badge-admin';
                                                         if ($rol == 'docente') $claseBadge = 'badge-profesor';
                                                         if ($rol == 'estudiante') $claseBadge = 'badge-estudiante';
@@ -435,14 +513,182 @@ $listaGrados = $adminModel->obtenerGradosSeccion($filtronivel, $busqueda);
                                                     </td>
 
                                                     <td>
-                                                        <span class="text-success small fw-bold"><i class="bi bi-circle-fill me-1" style="font-size: 0.5rem;"></i> Activo</span>
+                                                        <?php if ($user['estado'] == 1): ?>
+                                                            <span class="text-success small fw-bold">
+                                                                <i class="bi bi-circle-fill me-1"></i> Activo
+                                                            </span>
+                                                        <?php else: ?>
+                                                            <span class="text-danger small fw-bold">
+                                                                <i class="bi bi-circle-fill me-1"></i> Bloqueado
+                                                            </span>
+                                                        <?php endif; ?>
                                                     </td>
 
                                                     <td class="text-end pe-4">
-                                                        <button class="btn btn-sm btn-light text-primary me-1 shadow-sm" title="Editar Contraseña"><i class="bi bi-key-fill"></i></button>
-                                                        <button class="btn btn-sm btn-light text-danger shadow-sm" title="Bloquear"><i class="bi bi-lock-fill"></i></button>
+                                                        <button class="btn btn-sm btn-light text-primary me-1 shadow-sm" title="Editar Contraseña" data-bs-toggle="modal" data-bs-target="#modalEditar_<?php echo htmlspecialchars($user['usuario']); ?>">
+                                                            <i class="bi bi-key-fill"></i>
+                                                        </button>
+
+                                                        <?php if (strtolower($rol) != 'admin'): ?>
+                                                            <form method="POST" action="sistema_admin.php?tab=usuarios" class="d-inline">
+
+                                                                <input type="hidden" name="accion" value="bloquear_usuario">
+                                                                <input type="hidden" name="usuario_estado" value="<?php echo $user['usuario']; ?>">
+                                                                <input type="hidden" name="nuevoestado"
+                                                                    value="<?php echo ($user['estado'] == 1) ? '0' : '1'; ?>">
+
+                                                                <button type="submit"
+                                                                    class="btn btn-sm btn-light <?php echo ($user['estado'] == 1) ? 'text-warning' : 'text-success'; ?> me-1 shadow-sm"
+                                                                    title="<?php echo ($user['estado'] == 1) ? 'Bloquear Usuario' : 'Desbloquear Usuario'; ?>">
+
+                                                                    <i class="bi <?php echo ($user['estado'] == 1) ? 'bi-lock-fill' : 'bi-unlock-fill'; ?>"></i>
+
+                                                                </button>
+
+                                                            </form>
+                                                            <form method="POST" action="sistema_admin.php?tab=usuarios" class="d-inline">
+                                                                <input type="hidden" name="accion" value="eliminar_usuario">
+                                                                <input type="hidden" name="usuario_eliminar" value="<?php echo $user['usuario']; ?>">
+
+                                                                <button type="button" class="btn btn-sm btn-light text-danger shadow-sm" title="Eliminar Usuario" data-bs-toggle="modal" data-bs-target="#modalEliminar_<?php echo htmlspecialchars($user['usuario']); ?>">
+                                                                    <i class="bi bi-trash-fill"></i>
+                                                                </button>
+                                                            </form>
+                                                        <?php else: ?>
+                                                            <span class="badge bg-light text-muted border shadow-sm px-2 py-1" title="Cuenta protegida">
+                                                                <i class="bi bi-shield-lock-fill"></i>
+                                                            </span>
+                                                        <?php endif; ?>
                                                     </td>
                                                 </tr>
+                                                <!-- Modal para Editar Contraseña -->
+                                                <div class="modal fade" id="modalEditar_<?php echo htmlspecialchars($user['usuario']); ?>" tabindex="-1" aria-hidden="true">
+                                                    <div class="modal-dialog modal-dialog-centered modal-sm">
+                                                        <div class="modal-content border-0 shadow">
+                                                            <div class="modal-header border-0 pb-0 pt-4 px-4 text-center">
+                                                                <h5 class="modal-title fw-bold text-dark w-100">
+                                                                    <i class="bi bi-key-fill me-2 text-primary"></i> Cambiar Clave
+                                                                </h5>
+                                                                <button type="button" class="btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="modal"></button>
+                                                            </div>
+                                                            <div class="modal-body p-4">
+                                                                <form action="sistema_admin.php?tab=usuarios" method="POST">
+                                                                    <input type="hidden" name="accion" value="editar_password">
+                                                                    <input type="hidden" name="usuario_edit" value="<?php echo htmlspecialchars($user['usuario']); ?>">
+
+                                                                    <div class="mb-4 text-center pb-3 border-bottom">
+                                                                        <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 60px; height: 60px;">
+                                                                            <i class="bi bi-person-fill fs-2 text-secondary"></i>
+                                                                        </div>
+                                                                        <h6 class="fw-bold mb-0 text-dark"><?php echo htmlspecialchars($user['usuario']); ?></h6>
+                                                                        <span class="badge bg-secondary mt-1 text-uppercase" style="font-size: 0.65rem;"><?php echo htmlspecialchars($rol); ?></span>
+                                                                    </div>
+
+                                                                    <div class="mb-3">
+                                                                        <label class="form-label text-muted small fw-bold text-uppercase">Nueva Contraseña</label>
+                                                                        <div class="input-group">
+                                                                            <span class="input-group-text bg-light border-0"><i class="bi bi-lock text-muted"></i></span>
+                                                                            <input type="password" name="nueva_password" class="form-control bg-light border-0 p-2" placeholder="Mínimo 6 caracteres" required minlength="6">
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div class="d-grid gap-2 mt-4">
+                                                                        <button type="submit" class="btn text-white shadow-sm" style="background-color: var(--verde-institucional);">
+                                                                            <i class="bi bi-save me-1"></i> Guardar Cambios
+                                                                        </button>
+                                                                        <button type="button" class="btn btn-light text-muted" data-bs-dismiss="modal">Cancelar</button>
+                                                                    </div>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!-- Modal de Confirmación para Eliminar Usuario -->
+                                                <div class="modal fade" id="modalEliminar_<?php echo htmlspecialchars($user['usuario']); ?>" tabindex="-1" aria-hidden="true">
+                                                    <div class="modal-dialog modal-dialog-centered modal-sm">
+                                                        <div class="modal-content border-0 shadow">
+                                                            <div class="modal-body p-4 text-center">
+
+                                                                <div class="text-danger mb-3">
+                                                                    <i class="bi bi-exclamation-triangle-fill" style="font-size: 3rem;"></i>
+                                                                </div>
+
+                                                                <h5 class="fw-bold text-dark mb-3">¿Eliminar Usuario?</h5>
+                                                                <p class="text-muted small mb-4">Está a punto de borrar permanentemente el acceso de <strong class="text-dark"><?php echo htmlspecialchars($user['usuario']); ?></strong>. Esta acción no se puede deshacer.</p>
+
+                                                                <form action="sistema_admin.php?tab=usuarios" method="POST">
+                                                                    <input type="hidden" name="accion" value="eliminar_usuario">
+                                                                    <input type="hidden" name="usuario_eliminar" value="<?php echo htmlspecialchars($user['usuario']); ?>">
+
+                                                                    <div class="d-grid gap-2">
+                                                                        <button type="submit" class="btn btn-danger shadow-sm fw-bold">
+                                                                            Sí, Eliminar
+                                                                        </button>
+                                                                        <button type="button" class="btn btn-light text-muted" data-bs-dismiss="modal">Cancelar</button>
+                                                                    </div>
+                                                                </form>
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!-- Modal para Crear Nuevo Usuario -->
+                                                <div class="modal fade" id="modalNuevoUsuario" tabindex="-1" aria-hidden="true">
+                                                    <div class="modal-dialog modal-dialog-centered">
+                                                        <div class="modal-content border-0 shadow">
+
+                                                            <div class="modal-header border-0 pb-0 pt-4 px-4">
+                                                                <h5 class="modal-title fw-bold text-dark">
+                                                                    <i class="bi bi-person-plus-fill me-2 text-primary"></i> Agregar Nuevo Usuario
+                                                                </h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                            </div>
+
+                                                            <div class="modal-body p-4">
+                                                                <form action="sistema_admin.php?tab=usuarios" method="POST">
+                                                                    <input type="hidden" name="accion" value="crear_usuario">
+
+                                                                    <div class="mb-3">
+                                                                        <label class="form-label text-muted small fw-bold text-uppercase">Nombre de Usuario</label>
+                                                                        <div class="input-group">
+                                                                            <span class="input-group-text bg-light border-0"><i class="bi bi-person text-muted"></i></span>
+                                                                            <input type="text" name="nuevo_usuario" class="form-control bg-light border-0 p-2" placeholder="Ej. juan.perez" required>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div class="mb-3">
+                                                                        <label class="form-label text-muted small fw-bold text-uppercase">Contraseña Inicial</label>
+                                                                        <div class="input-group">
+                                                                            <span class="input-group-text bg-light border-0"><i class="bi bi-lock text-muted"></i></span>
+                                                                            <input type="password" name="nueva_password" class="form-control bg-light border-0 p-2" placeholder="Mínimo 6 caracteres" required minlength="6">
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div class="mb-4">
+                                                                        <label class="form-label text-muted small fw-bold text-uppercase">Rol del Sistema</label>
+                                                                        <div class="input-group">
+                                                                            <span class="input-group-text bg-light border-0"><i class="bi bi-shield-lock text-muted"></i></span>
+                                                                            <select name="nuevo_rol" class="form-select bg-light border-0 p-2" required>
+                                                                                <option value="" selected disabled>Seleccione un rol...</option>
+                                                                                <option value="admin">Administrador</option>
+                                                                                <option value="docente">Docente</option>
+                                                                                <option value="estudiante">Estudiante</option>
+                                                                            </select>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4 pt-3 border-top">
+                                                                        <button type="button" class="btn btn-light text-muted px-4" data-bs-dismiss="modal">Cancelar</button>
+                                                                        <button type="submit" class="btn text-white px-4 shadow-sm" style="background-color: var(--verde-institucional);">
+                                                                            <i class="bi bi-save me-1"></i> Guardar Usuario
+                                                                        </button>
+                                                                    </div>
+                                                                </form>
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             <?php endforeach; ?>
                                         <?php else: ?>
                                             <tr>
@@ -769,6 +1015,57 @@ $listaGrados = $adminModel->obtenerGradosSeccion($filtronivel, $busqueda);
                         </div>
                     </form>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Cambiar Contraseña -->
+    <div class="modal fade" id="modalEditarPassword" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content border-0 shadow">
+
+                <div class="modal-header border-0 pb-0 pt-4 px-4 text-center">
+                    <h5 class="modal-title fw-bold text-dark w-100">
+                        <i class="bi bi-key-fill me-2 text-primary"></i> Cambiar Clave
+                    </h5>
+                    <button type="button" class="btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+
+                <div class="modal-body p-4">
+                    <form>
+                        <div class="mb-4 text-center pb-3 border-bottom">
+                            <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 60px; height: 60px;">
+                                <i class="bi bi-person-fill fs-2 text-secondary"></i>
+                            </div>
+                            <h6 class="fw-bold mb-0 text-dark">carlos.fonseca</h6>
+                            <span class="badge bg-secondary mt-1" style="font-size: 0.65rem;">DOCENTE</span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label text-muted small fw-bold text-uppercase">Nueva Contraseña</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-0"><i class="bi bi-lock text-muted"></i></span>
+                                <input type="password" class="form-control bg-light border-0 p-2" placeholder="Mínimo 6 caracteres">
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label text-muted small fw-bold text-uppercase">Confirmar Contraseña</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-0"><i class="bi bi-check2-circle text-muted"></i></span>
+                                <input type="password" class="form-control bg-light border-0 p-2" placeholder="Repita la contraseña">
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="button" class="btn text-white shadow-sm" style="background-color: var(--verde-institucional);">
+                                <i class="bi bi-save me-1"></i> Guardar Cambios
+                            </button>
+                            <button type="button" class="btn btn-light text-muted" data-bs-dismiss="modal">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+
             </div>
         </div>
     </div>

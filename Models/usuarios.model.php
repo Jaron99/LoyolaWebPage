@@ -9,8 +9,10 @@ class Usuarios{
         $this->conexion = Conexion::connect();
     }
 
-    public function login ($usuario, $contrasena) {
-        $sql = "SELECT * FROM usuarios WHERE usuario = '$usuario' AND contrasena = '$contrasena' AND estado = '1'";
+    public function login ($usuario) {
+        $usuarioSeguro = $this->conexion->real_escape_string($usuario);
+
+        $sql = "SELECT * FROM usuarios WHERE usuario = '$usuarioSeguro' AND estado = '1'";
         $result = $this->conexion->query($sql);
         
         return $result;
