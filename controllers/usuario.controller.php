@@ -5,11 +5,20 @@ $usuariosModel = new Usuarios();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion'])) {
 
-    //Accion para editar un usuario
+    //Accion para editarc contraseña de un usuario
     if ($_POST['accion'] === 'editar_password') {
         $usuarioeditar = $_POST['usuarioeditar'];
         $nuevacontraseña = $_POST['nuevacontraseña'];
         $usuariosModel -> cambiarcontrasena($usuarioeditar, $nuevacontraseña);
+        header("Location:../views/admin.view.php?tab=usuarios");
+        exit();
+    }
+
+    //Accion para editar el nombre de usuario
+    if ($_POST['accion'] === 'editar_usuario') {
+        $usuarioeditar = $_POST['usuarioeditar'];
+        $nuevousuario = $_POST['nuevousuario'];
+        $usuariosModel -> cambiarNombreUsuario($usuarioeditar, $nuevousuario);
         header("Location:../views/admin.view.php?tab=usuarios");
         exit();
     }

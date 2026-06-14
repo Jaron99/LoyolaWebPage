@@ -56,5 +56,19 @@ class Usuarios{
         $sql = "INSERT INTO usuarios (usuario, contrasena, rol, estado) VALUES ('$userSeguro', '$passHash', '$rolSeguro', '1')";
         return $this->conexion->query($sql);
     }
+
+        public function cambiarNombreUsuario($usuario, $nuevousuario)
+    {
+        $userSeguro = $this->conexion->real_escape_string($usuario);
+        $nuevoUsuarioSeguro = $this->conexion->real_escape_string($nuevousuario);
+
+        $sql = "UPDATE usuarios SET usuario = '$nuevoUsuarioSeguro' WHERE usuario = '$userSeguro'";
+
+        if ($this->conexion->query($sql)) {
+            return true; // Nombre de usuario actualizado exitosamente
+        } else {
+            return false; // Error al actualizar el nombre de usuario
+        }
+    }
 }
 

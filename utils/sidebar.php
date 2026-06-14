@@ -4,7 +4,7 @@ if (!isset($active)) {
     $active = isset($_GET['tab']) ? $_GET['tab'] : 'panel';
 }
 if (!isset($_SESSION['rol'])) {
-    $_SESSION['rol'] = ''; 
+    $_SESSION['rol'] = '';
 }
 ?>
 
@@ -13,7 +13,7 @@ if (!isset($_SESSION['rol'])) {
         <img src="../Imagenes/Logo.png" alt="Logo" class="sidebar-logo mb-2">
         <h5 class="fw-bold mb-0 text-white">Portal San Ignacio</h5>
         <small class="text-white-50">
-            <?php 
+            <?php
             // Subtítulo dinámico dependiendo del rol
             if ($_SESSION['rol'] == 'admin') echo 'Administración General';
             elseif ($_SESSION['rol'] == 'docente') echo 'Portal Docente';
@@ -23,7 +23,6 @@ if (!isset($_SESSION['rol'])) {
     </div>
 
     <ul class="nav nav-pills flex-column mb-auto mt-2">
-        
         <?php if ($_SESSION['rol'] == 'admin'): ?>
             <li class="nav-item">
                 <a class="nav-link <?php echo ($active == 'panel') ? 'active' : ''; ?>" href="admin.view.php?tab=panel">
@@ -40,6 +39,10 @@ if (!isset($_SESSION['rol'])) {
                     <i class="bi bi-diagram-3-fill me-3"></i> Grados y Secciones
                 </a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link <?php echo ($active == 'calificaciones') ? 'active' : ''; ?>" href="admin.view.php?tab=calificaciones">
+                    <i class="bi bi-journal-check me-3"></i> Calificaciones
+                </a>
             <li class="nav-item">
                 <a class="nav-link <?php echo ($active == 'respaldo') ? 'active' : ''; ?>" href="admin.view.php?tab=respaldo">
                     <i class="bi bi-cloud-upload-fill me-3"></i> Respaldo del Sistema
