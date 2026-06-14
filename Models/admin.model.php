@@ -11,8 +11,7 @@ class Admin
         $this->conexion = Conexion::connect();
     }
 
-    //Funcion para obtener todos los usuarios 
-   //Funcion para obtener todos los usuarios 
+    //Funcion para obtener todos los usuarios con filtros de rol y busqueda
     public function getUsuarios($filtrorol = "", $busquedaUsuarios = "")
     {
         $sql = "SELECT * FROM usuarios WHERE 1=1";

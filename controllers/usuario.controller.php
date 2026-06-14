@@ -1,9 +1,5 @@
 <?php
-session_start();
-if (!isset($_SESSION['usuario']) || $_SESSION['rol'] != 'admin') {
-    header("Location: ../views/login.view.php");
-    exit();
-}
+
 require_once "../models/usuarios.model.php";
 $usuariosModel = new Usuarios();
 
@@ -19,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion'])) {
     }
 
     //Accion Bloqueo o Desbloqueo de Usuario
-    if ($_POST['accion'] === 'cambiar_estado') {
+    if ($_POST['accion'] === 'bloquear_usuario') {
         $usuarioBloquear = $_POST['usuarioBloquear'];
         $nuevoEstado = $_POST['nuevoEstado'];
         $usuariosModel -> bloquearUsuario($usuarioBloquear, $nuevoEstado);
@@ -44,7 +40,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion'])) {
         header("Location:../views/admin.view.php?tab=usuarios");
         exit();
     }
-
 }
 
 

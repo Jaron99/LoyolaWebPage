@@ -1,3 +1,13 @@
+<?php
+// Salvaguardas MVC para evitar errores de variables indefinidas
+if (!isset($active)) {
+    $active = isset($_GET['tab']) ? $_GET['tab'] : 'panel';
+}
+if (!isset($_SESSION['rol'])) {
+    $_SESSION['rol'] = ''; 
+}
+?>
+
 <div class="sidebar d-flex flex-column py-3" id="sidebar">
     <div class="text-center mb-4 mt-2">
         <img src="../Imagenes/Logo.png" alt="Logo" class="sidebar-logo mb-2">
