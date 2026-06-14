@@ -93,7 +93,16 @@
                                         ?>
                                     </td>
                                     <td>
-                                        <span class="text-muted fst-italic small"><i class="bi bi-person-x me-1"></i> Sin asignar</span>
+                                        <?php if (!empty($fila['nombre_profesor'])): ?>
+                                            <span class="text-primary fw-bold small">
+                                                <i class="bi bi-person-check-fill me-1"></i>
+                                                <?php echo htmlspecialchars($fila['nombre_profesor']); ?>
+                                            </span>
+                                        <?php else: ?>
+                                            <span class="text-muted fst-italic small">
+                                                <i class="bi bi-person-x me-1"></i> Sin asignar
+                                            </span>
+                                        <?php endif; ?>
                                     </td>
                                     <td class="text-end pe-4">
                                         <!-- Botón de Ver Alumnos -->
@@ -106,17 +115,36 @@
                                             </button>
                                         </form>
                                         <!-- Botón de Matricular Alumnos-->
-                                        <button class="btn btn-outline-success btn-sm " title="Matricular alumnos" data-bs-toggle="modal" data-bs-target="#modalMatricularAlumnos">
-                                            <i class="bi bi-person-plus"></i>
-                                        </button>
+                                        <form method="POST" action="admin.view.php?tab=grados" class="d-inline">
+                                            <input type="hidden" name="accion" value="preparar_matricula">
+                                            <input type="hidden" name="id_seccion" value="<?php echo htmlspecialchars($fila['id_seccion'] ?? $fila['id_grado_seccion']); ?>">
+                                            <input type="hidden" name="nombre_grado" value="<?php echo htmlspecialchars($grado . ' ' . $seccion); ?>">
+
+                                            <button type="submit" class="btn btn-outline-success btn-sm shadow-sm" title="Matricular alumnos">
+                                                <i class="bi bi-person-plus"></i>
+                                            </button>
+                                        </form>
                                         <!-- Botón de Editar Grado -->
-                                        <button class="btn btn-outline-primary btn-sm shadow-sm" title="Editar grado" data-bs-toggle="modal" data-bs-target="#modalEditarGrado">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
+                                        <form method="POST" action="admin.view.php?tab=grados" class="d-inline">
+                                            <input type="hidden" name="accion" value="preparar_editar_grado">
+                                            <input type="hidden" name="id_seccion" value="<?php echo htmlspecialchars($fila['id_seccion'] ?? $fila['id_grado_seccion']); ?>">
+                                            <input type="hidden" name="grado_nombre" value="<?php echo htmlspecialchars($grado); ?>">
+                                            <input type="hidden" name="seccion_nombre" value="<?php echo htmlspecialchars($seccion); ?>">
+                                            <input type="hidden" name="id_profesor_actual" value="<?php echo htmlspecialchars($fila['id_profesor'] ?? ''); ?>">
+
+                                            <button type="submit" class="btn btn-sm btn-light text-primary me-1 shadow-sm" title="Configurar Grado y Traslados">
+                                                <i class="bi bi-gear-fill"></i>
+                                            </button>
+                                        </form>
                                         <!-- Botón de Eliminar Grado -->
-                                        <button class="btn btn-outline-danger btn-sm shadow-sm" title="Eliminar grado" data-bs-toggle="modal" data-bs-target="#modalEliminarGrado">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
+                                        <form method="POST" action="admin.view.php?tab=grados" class="d-inline">
+                                            <input type="hidden" name="accion" value="preparar_eliminar_grado">
+                                            <input type="hidden" name="id_seccion" value="<?php echo htmlspecialchars($fila['id_seccion'] ?? $fila['id_grado_seccion']); ?>">
+
+                                            <button type="submit" class="btn btn-outline-danger btn-sm shadow-sm" title="Eliminar grado">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
@@ -213,6 +241,252 @@
                         </a>
                     </div>
 
+                </div>
+            </div>
+        </div>
+    <?php endif; ?>
+    <!-- Modal para matricular alumnos -->
+    <?php if ($mostrarModalMatricula): ?>
+        <div class="modal fade show" id="modalMatricula" tabindex="-1" style="display:block; background:rgba(0,0,0,.5);" aria-modal="true" role="dialog">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content border-0 shadow rounded-3">
+
+                    <div class="modal-header border-bottom-0 pb-0 pt-4 px-4 bg-light rounded-top-3">
+                        <div class="d-flex align-items-center w-100">
+                            <div class="bg-success bg-opacity-10 rounded-circle p-3 me-3 text-success">
+                                <i class="bi bi-person-plus-fill fs-3"></i>
+                            </div>
+                            <div>
+                                <h5 class="modal-title fw-bold text-dark mb-1">Matricular Alumnos</h5>
+                                <p class="text-muted small mb-0">Sección: <strong class="text-dark"><?php echo htmlspecialchars($nombreGradoMatricula); ?></strong></p>
+                            </div>
+                            <a href="admin.view.php?tab=grados" class="btn-close ms-auto"></a>
+                        </div>
+                    </div>
+
+                    <form action="admin.view.php?tab=grados" method="POST">
+                        <div class="modal-body p-4 bg-light">
+                            <input type="hidden" name="accion" value="procesar_matricula">
+                            <input type="hidden" name="id_seccion" value="<?php echo htmlspecialchars($idSeccionMatricula); ?>">
+
+                            <div class="alert alert-info border-0 shadow-sm small d-flex align-items-center">
+                                <i class="bi bi-info-circle-fill me-2 fs-5"></i>
+                                <div>
+                                    Solo se muestran los estudiantes activos que <strong>no están matriculados</strong> en ninguna otra sección.
+                                </div>
+                            </div>
+
+                            <label class="form-label fw-bold text-muted small text-uppercase">Seleccione los estudiantes</label>
+
+                            <div class="bg-white border rounded-3 p-0 shadow-sm" style="max-height: 350px; overflow-y: auto;">
+                                <?php if (!empty($alumnosSinMatricula)): ?>
+                                    <div class="list-group list-group-flush">
+                                        <?php foreach ($alumnosSinMatricula as $alum): ?>
+                                            <label class="list-group-item d-flex align-items-center gap-3 p-3 text-dark border-bottom" style="cursor: pointer; transition: background-color 0.2s;" onmouseover="this.classList.add('bg-light')" onmouseout="this.classList.remove('bg-light')">
+                                                <input class="form-check-input flex-shrink-0 border-secondary" type="checkbox" name="alumnos_seleccionados[]" value="<?php echo htmlspecialchars($alum['id_alumno']); ?>" style="width: 1.3rem; height: 1.3rem;">
+                                                <div>
+                                                    <h6 class="mb-0 fw-bold"><?php echo htmlspecialchars($alum['nombres'] . ' ' . $alum['apellidos']); ?></h6>
+                                                </div>
+                                            </label>
+
+                                        <?php endforeach; ?>
+                                    </div>
+                                <?php else: ?>
+                                    <div class="text-center py-5">
+                                        <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex p-3 mb-3">
+                                            <i class="bi bi-check2-all text-success fs-1"></i>
+                                        </div>
+                                        <h6 class="text-dark fw-bold mb-1">¡Todo en orden!</h6>
+                                        <small class="text-muted">Todos los alumnos activos ya cuentan con un grado asignado.</small>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer border-top-0 bg-light rounded-bottom-3 d-flex gap-2">
+                            <a href="admin.view.php?tab=grados" class="btn btn-light shadow-sm text-muted fw-bold">Cancelar</a>
+                            <button type="submit" class="btn shadow-sm px-4 fw-bold text-white" style="background-color: var(--verde-institucional);" <?php echo empty($alumnosSinMatricula) ? 'disabled' : ''; ?>>
+                                <i class="bi bi-save-fill me-1"></i> Guardar Matrícula
+                            </button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    <?php endif; ?>
+    <!-- Modal para editar grado (nombre, sección, aula, traslados) -->
+    <?php if ($mostrarModalEditarGrado): ?>
+        <div class="modal fade show" id="modalEditarGrado" tabindex="-1" style="display:block; background:rgba(0,0,0,.5);" aria-modal="true" role="dialog">
+            <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+                <div class="modal-content border-0 shadow rounded-3">
+
+                    <div class="modal-header border-bottom-0 pb-0 pt-4 px-4 bg-light rounded-top-3">
+                        <div class="d-flex align-items-center w-100 mb-3">
+                            <div class="bg-primary bg-opacity-10 rounded-circle p-3 me-3 text-primary">
+                                <i class="bi bi-gear-fill fs-3"></i>
+                            </div>
+                            <div>
+                                <h5 class="modal-title fw-bold text-dark mb-1">Configuración del Grado</h5>
+                                <p class="text-muted small mb-0"><?php echo htmlspecialchars($datosGradoEditar['grado_nombre'] . " " . $datosGradoEditar['seccion_nombre']); ?></p>
+                            </div>
+                            <a href="admin.view.php?tab=grados" class="btn-close ms-auto"></a>
+                        </div>
+                    </div>
+                    <div class="bg-light px-4 border-bottom">
+                        <ul class="nav nav-tabs border-0" id="configTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="info-tab" data-bs-toggle="tab" data-bs-target="#info-pane" type="button" role="tab">Maestro Guía</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="traslado-tab" data-bs-toggle="tab" data-bs-target="#traslado-pane" type="button" role="tab">Trasladar Alumnos</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="retiro-tab" data-bs-toggle="tab" data-bs-target="#retiro-pane" type="button" role="tab">Retirar Alumnos</button>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="modal-body p-4 bg-white">
+                        <div class="tab-content" id="configTabsContent">
+                            <!-- Pestaña de Asignacion de Maestro Guia -->
+                            <div class="tab-pane fade show active" id="info-pane" role="tabpanel">
+                                <form action="admin.view.php?tab=grados" method="POST">
+                                    <input type="hidden" name="accion" value="actualizar_maestro_guia">
+                                    <input type="hidden" name="id_seccion" value="<?php echo $datosGradoEditar['id_seccion']; ?>">
+
+                                    <div class="mb-4 mt-3">
+                                        <label class="form-label text-muted small fw-bold text-uppercase d-block mb-2">
+                                            Maestro Guía Asignado
+                                        </label>
+                                        <div class="input-group shadow-sm rounded-3">
+                                            <span class="input-group-text bg-light border-end-0 text-muted">
+                                                <i class="bi bi-person-badge"></i>
+                                            </span>
+                                            <select name="id_profesor" class="form-select border-start-0 bg-light p-2" required>
+                                                <option value="">-- Sin maestro asignado --</option>
+
+                                                <?php if (!empty($listaProfesores)): ?>
+                                                    <?php foreach ($listaProfesores as $prof):
+                                                        // Si el id de este profesor de la lista es igual al que ya tiene la sección, lo marcamos como seleccionado
+                                                        $selected = ($prof['id_profesor'] === ($datosGradoEditar['id_profesor_actual'] ?? '')) ? 'selected' : '';
+                                                    ?>
+                                                        <option value="<?php echo htmlspecialchars($prof['id_profesor']); ?>" <?php echo $selected; ?>>
+                                                            <?php echo htmlspecialchars($prof['nombre_completo']); ?>
+                                                        </option>
+                                                    <?php endforeach; ?>
+                                                <?php endif; ?>
+
+                                            </select>
+                                        </div>
+                                        <small class="text-muted d-block mt-2">
+                                            Selecciona al profesor responsable. Un docente puede ser guía de múltiples secciones si es necesario.
+                                        </small>
+                                    </div>
+
+                                    <div class="text-end pt-3 border-top">
+                                        <button type="submit" class="btn text-white shadow-sm fw-bold px-4" style="background-color: var(--verde-institucional);">
+                                            <i class="bi bi-save-fill me-1"></i> Asignar Maestro
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                            <!-- Pestaña de Traslado de Estudiante -->
+                            <div class="tab-pane fade" id="traslado-pane" role="tabpanel">
+                                <form action="admin.view.php?tab=grados" method="POST">
+                                    <input type="hidden" name="accion" value="trasladar_alumnos">
+                                    <input type="hidden" name="id_seccion_origen" value="<?php echo $datosGradoEditar['id_seccion']; ?>">
+
+                                    <div class="alert alert-warning border-0 shadow-sm small d-flex align-items-center mb-3">
+                                        <i class="bi bi-exclamation-triangle-fill me-2 fs-5"></i>
+                                        <div>Seleccione los alumnos que desea retirar de esta sección para moverlos a un nuevo grado.</div>
+                                    </div>
+
+                                    <div class="border rounded-3 p-0 shadow-sm mb-4" style="max-height: 250px; overflow-y: auto;">
+                                        <?php if (!empty($alumnosDelGradoEditar)): ?>
+                                            <div class="list-group list-group-flush">
+                                                <?php foreach ($alumnosDelGradoEditar as $alum): ?>
+                                                    <label class="list-group-item d-flex align-items-center gap-3 p-2 text-dark border-bottom" style="cursor: pointer;">
+                                                        <input class="form-check-input flex-shrink-0" type="checkbox" name="alumnos_traslado[]" value="<?php echo htmlspecialchars($alum['id_alumno']); ?>">
+                                                        <div>
+                                                            <h6 class="mb-0 fw-bold" style="font-size: 0.9rem;"><?php echo htmlspecialchars($alum['nombres'] . ' ' . $alum['apellidos']); ?></h6>
+                                                        </div>
+                                                    </label>
+                                                <?php endforeach; ?>
+                                            </div>
+                                        <?php else: ?>
+                                            <div class="text-center py-4 text-muted small">No hay alumnos para trasladar.</div>
+                                        <?php endif; ?>
+                                    </div>
+
+                                    <div class="row align-items-end bg-light p-3 rounded-3 border">
+                                        <div class="col-md-8">
+                                            <label class="form-label text-muted small fw-bold">Mover a la sección:</label>
+                                            <select name="id_seccion_destino" class="form-select border-primary" required>
+                                                <option value="">Seleccione el grado destino...</option>
+                                                <?php
+                                                if (!empty($listaGrados)):
+                                                    foreach ($listaGrados as $g_dest):
+                                                        if (!empty($g_dest['id_seccion']) && $g_dest['id_seccion'] != $datosGradoEditar['id_seccion']):
+                                                ?>
+                                                            <option value="<?php echo htmlspecialchars($g_dest['id_seccion']); ?>">
+                                                                <?php echo htmlspecialchars($g_dest['nombre_grad'] . ' ' . $g_dest['nombre_sec']); ?>
+                                                            </option>
+                                                <?php
+                                                        endif;
+                                                    endforeach;
+                                                endif;
+                                                ?>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4 text-end">
+                                            <button type="submit" class="btn btn-warning shadow-sm fw-bold w-100"><i class="bi bi-arrow-left-right me-1"></i> Trasladar</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <!-- Pestaña de Retiro de Estudiante -->
+                            <div class="tab-pane fade" id="retiro-pane" role="tabpanel">
+                                <form action="admin.view.php?tab=grados" method="POST">
+                                    <input type="hidden" name="accion" value="retirar_alumnos_seccion">
+                                    <input type="hidden" name="id_seccion_origen" value="<?php echo $datosGradoEditar['id_seccion']; ?>">
+
+                                    <div class="alert alert-danger border-0 shadow-sm small d-flex align-items-center mb-3">
+                                        <i class="bi bi-exclamation-octagon-fill me-2 fs-5"></i>
+                                        <div>
+                                            Seleccione los alumnos que desea <strong>remover de esta sección</strong>. El alumno quedará libre para ser matriculado en otro grado.
+                                        </div>
+                                    </div>
+
+                                    <div class="border rounded-3 p-0 shadow-sm mb-4" style="max-height: 250px; overflow-y: auto;">
+                                        <?php if (!empty($alumnosDelGradoEditar)): ?>
+                                            <div class="list-group list-group-flush">
+                                                <?php foreach ($alumnosDelGradoEditar as $alum): ?>
+                                                    <label class="list-group-item d-flex align-items-center gap-3 p-2 text-dark border-bottom" style="cursor: pointer;">
+                                                        <input class="form-check-input flex-shrink-0" type="checkbox" name="alumnos_retiro[]" value="<?php echo htmlspecialchars($alum['id_alumno']); ?>">
+                                                        <div>
+                                                            <h6 class="mb-0 fw-bold" style="font-size: 0.9rem;"><?php echo htmlspecialchars($alum['nombres'] . ' ' . $alum['apellidos']); ?></h6>
+                                                        </div>
+                                                    </label>
+                                                <?php endforeach; ?>
+                                            </div>
+                                        <?php else: ?>
+                                            <div class="text-center py-4 text-muted small">No hay alumnos inscritos en esta sección para retirar.</div>
+                                        <?php endif; ?>
+                                    </div>
+
+                                    <div class="text-end pt-3 border-top">
+                                        <button type="submit" class="btn btn-danger shadow-sm fw-bold px-4" <?php echo empty($alumnosDelGradoEditar) ? 'disabled' : ''; ?>>
+                                            <i class="bi bi-person-dash-fill me-1"></i> Confirmar Retiro de Alumnos
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-top-0 bg-light rounded-bottom-3">
+                        <a href="admin.view.php?tab=grados" class="btn btn-light shadow-sm text-muted fw-bold w-100 py-2">Cerrar Panel</a>
+                    </div>
                 </div>
             </div>
         </div>

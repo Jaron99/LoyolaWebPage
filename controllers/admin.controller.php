@@ -34,6 +34,14 @@ $gradosModel = new Grados();
 
 $alumnosMatriculados = [];
 $mostrarModalAlumnos = false;
+$alumnosSinMatricula = [];
+$mostrarModalMatricula = false;
+$idSeccionMatricula = 0;
+$nombreGradoMatricula = "";
+$mostrarModalEditarGrado = false;
+$datosGradoEditar = [];
+$alumnosDelGradoEditar = [];
+$listaDocentes = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion'])) {
 
@@ -50,6 +58,99 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion'])) {
         $mostrarModalAlumnos = true;
         $active = "grados";
     }
-}
+    // Interceptamos el botón de Matricular
+    if ($_POST['accion'] === 'preparar_matricula') {
+        $idSeccionMatricula = (int) $_POST['id_seccion'];
+        $nombreGradoMatricula = $_POST['nombre_grado'];
 
-?>
+        // Llamamos a la función restrictiva
+        $alumnosSinMatricula = $gradosModel->obtenerAlumnosSinMatricula();
+
+        $mostrarModalMatricula = true;
+        $active = "grados";
+    }
+
+    if ($_POST['accion'] === 'procesar_matricula') {
+        $idSeccion = (int) $_POST['id_seccion'];
+
+        // Recibimos el array de checkboxes (si no marcaron ninguno, queda un array vacío)
+        $alumnosSeleccionados = isset($_POST['alumnos_seleccionados']) ? $_POST['alumnos_seleccionados'] : [];
+
+        // Si hay alumnos seleccionados, los guardamos uno por uno
+        if (!empty($alumnosSeleccionados)) {
+            foreach ($alumnosSeleccionados as $id_alumno) {
+                // Llamamos a la función del modelo por cada alumno marcado
+                $gradosModel->matricularAlumno((int) $id_alumno, $idSeccion);
+            }
+        }
+
+        // Redirigimos de vuelta a la pestaña para limpiar el formulario y evitar que se dupliquen al recargar la página
+        header("Location: admin.view.php?tab=grados");
+        exit();
+    }
+   if ($_POST['accion'] === 'preparar_editar_grado') {
+        $idSeccion = (int) $_POST['id_seccion'];
+        
+        $datosGradoEditar = [
+            'id_seccion' => $idSeccion,
+            'grado_nombre' => $_POST['grado_nombre'],
+            'seccion_nombre' => $_POST['seccion_nombre'],
+            'id_profesor_actual' => $_POST['id_profesor_actual'] ?? ''
+        ];
+
+        // 1. Cargamos los profesores para la primera pestaña
+        $listaProfesores = $gradosModel->obtenerDocentes();
+
+        // 2. LA SOLUCIÓN A LA LISTA VACÍA: Cargamos a los alumnos actuales de esta sección
+        $alumnosDelGradoEditar = [];
+        $resultadoAlumnos = $gradosModel->obtenerAlumnosPorSeccion($idSeccion);
+        if ($resultadoAlumnos) {
+            while ($fila = $resultadoAlumnos->fetch_assoc()) {
+                $alumnosDelGradoEditar[] = $fila;
+            }
+        }
+        
+        $mostrarModalEditarGrado = true;
+        $active = "grados";
+    }
+    
+    if ($_POST['accion'] === 'actualizar_maestro_guia') {
+        $idSeccion = (int) $_POST['id_seccion'];
+        $idProfesor = $_POST['id_profesor']; // Recibimos el código "DOC-00X"
+        
+        $gradosModel->asignarMaestroGuia($idSeccion, $idProfesor);
+        
+        header("Location: admin.view.php?tab=grados");
+        exit();
+    }
+
+    // Acción: Retirar alumnos de la sección actual (quitar matrícula)
+    if ($_POST['accion'] === 'retirar_alumnos_seccion') {
+        $idSeccion = (int) $_POST['id_seccion_origen'];
+        $alumnosARetirar = isset($_POST['alumnos_retiro']) ? $_POST['alumnos_retiro'] : [];
+
+        if (!empty($alumnosARetirar)) {
+            foreach ($alumnosARetirar as $id_alumno) {
+                // Los desmatriculamos uno a uno
+                $gradosModel->desmatricularAlumno((int)$id_alumno, $idSeccion);
+            }
+        }
+        header("Location: admin.view.php?tab=grados");
+        exit();
+    }
+
+    if ($_POST['accion'] === 'trasladar_alumnos') {
+        $idSeccionOrigen = (int) $_POST['id_seccion_origen'];
+        $idSeccionDestino = (int) $_POST['id_seccion_destino'];
+        $alumnosATrasladar = isset($_POST['alumnos_traslado']) ? $_POST['alumnos_traslado'] : [];
+
+        // Aseguramos que hayan marcado alumnos y seleccionado un destino válido
+        if (!empty($alumnosATrasladar) && $idSeccionDestino > 0) {
+            foreach ($alumnosATrasladar as $id_alumno) {
+                $gradosModel->trasladarAlumno((int)$id_alumno, $idSeccionOrigen, $idSeccionDestino);
+            }
+        }
+        header("Location: admin.view.php?tab=grados");
+        exit();
+    }
+}
