@@ -375,7 +375,6 @@
 </head>
 
 <body>
-
     <!-- BARRA DE NAVEGACION-->
     <nav class="navbar navbar-expand-lg navbar-custom sticky-top py-3 px-4">
         <div class="container-fluid">
@@ -396,7 +395,7 @@
                 </ul>
             </div>
             <div class="d-none d-lg-block">
-                <a href="/login.php"><button class="btn btn-acceso px-4 py-2"> Acceso al Sistema </button> </a>
+                <a href="views/login.view.php"><button class="btn btn-acceso px-4 py-2"> Acceso al Sistema </button> </a>
             </div>
         </div>
     </nav>
@@ -463,7 +462,7 @@
                 verdad de Cristo.
             </p>
             <div class="d-flex flex-column flex-sm-row justify-content-center gap-3">
-                <a href="/login.html"><button class="btn-hero-primary">Ingresa</button> </a>
+                <a href="views/login.view.php"><button class="btn-hero-primary">Ingresa</button> </a>
                 <a href="#nosotros"><button class="btn-hero-outline">Conoce más</button> </a>
             </div>
         </div>
