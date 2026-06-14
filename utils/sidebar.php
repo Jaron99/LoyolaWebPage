@@ -39,6 +39,37 @@ if (!isset($_SESSION['rol'])) {
                     <i class="bi bi-diagram-3-fill me-3"></i> Grados y Secciones
                 </a>
             </li>
+            <?php
+            $menuUsuariosAbierto = ($active === 'estudiantes' || $active === 'docentes') ? 'show' : '';
+            $iconoActivo = ($active === 'estudiantes' || $active === 'docentes') ? 'text-warning' : 'text-white';
+            ?>
+            <li class="nav-item w-100 mb-2">
+                <a href="#submenuUsuarios" data-bs-toggle="collapse" class="nav-link text-white d-flex align-items-center justify-content-between transition-all" aria-expanded="<?php echo !empty($menuUsuariosAbierto) ? 'true' : 'false'; ?>">
+                    <div class="d-flex align-items-center gap-3">
+                        <i class="bi bi-building fs-5 <?php echo $iconoActivo; ?>"></i>
+                        <span class="d-none d-md-inline fw-semibold">Gestión Academica</span>
+                    </div>
+                    <i class="bi bi-chevron-down d-none d-md-inline text-white-50" style="font-size: 0.8rem;"></i>
+                </a>
+                <div class="collapse <?php echo $menuUsuariosAbierto; ?>" id="submenuUsuarios">
+                    <ul class="nav flex-column ms-4 mt-2 border-start border-light border-opacity-25" style="border-width: 2px !important;">
+
+                        <li class="nav-item mb-1">
+                            <a href="admin.view.php?tab=estudiantes" class="nav-link d-flex align-items-center gap-3 py-2 <?php echo ($active === 'estudiantes') ? 'text-warning fw-bold' : 'text-white text-opacity-75'; ?>" style="font-size: 0.9rem;">
+                                <i class="bi bi-mortarboard-fill"></i>
+                                <span class="d-none d-md-inline">Estudiantes</span>
+                            </a>
+                        </li>
+                        <li class="nav-item mb-1">
+                            <a href="admin.view.php?tab=docentes" class="nav-link d-flex align-items-center gap-3 py-2 <?php echo ($active === 'docentes') ? 'text-warning fw-bold' : 'text-white text-opacity-75'; ?>" style="font-size: 0.9rem;">
+                                <i class="bi bi-person-badge-fill"></i>
+                                <span class="d-none d-md-inline">Docentes</span>
+                            </a>
+                        </li>
+
+                    </ul>
+                </div>
+            </li>
             <li class="nav-item">
                 <a class="nav-link <?php echo ($active == 'calificaciones') ? 'active' : ''; ?>" href="admin.view.php?tab=calificaciones">
                     <i class="bi bi-journal-check me-3"></i> Calificaciones

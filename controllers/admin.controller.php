@@ -153,4 +153,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion'])) {
         header("Location: admin.view.php?tab=grados");
         exit();
     }
+
+    if ($_POST['accion'] === 'eliminar_grado') {
+        $idSeccion = (int) $_POST['id_seccion'];
+        
+        // Llamamos a la función doble del modelo
+        $gradosModel->eliminarSeccion($idSeccion);
+        
+        // Refrescamos la vista
+        header("Location: admin.view.php?tab=grados");
+        exit();
+    }
+
+    if ($_POST['accion'] === 'guardar_nuevo_grado') {
+        $idGrado = (int) $_POST['id_grado'];
+        $nombreSec = strtoupper(trim($_POST['nombre_sec'])); 
+
+        // Evaluamos usando la función del modelo
+        if ($gradosModel->existeSeccion($idGrado, $nombreSec)) {
+            // ¡Ya existe! Guardamos un mensaje de error en la sesión para mostrarlo en la vista
+            session_start();
+            $_SESSION['error_grado'] = "¡Error! Esa sección ya se encuentra registrada en el grado seleccionado.";
+        } else {
+            $gradosModel->registrarSeccion($idGrado, $nombreSec);
+        }
+
+        header("Location: admin.view.php?tab=grados");
+        exit();
+    }
 }

@@ -1,4 +1,5 @@
 <?php
+ob_start();
 session_start();
 if (!isset($_SESSION['usuario']) || $_SESSION['rol'] != 'admin') {
     header("Location: login.view.php");
@@ -22,6 +23,23 @@ include_once __DIR__ . "/../controllers/admin.controller.php";
             <?php include_once "../utils/gestion_usuarios.php"; ?>
             <!-- Grados  -->
             <?php include_once "../utils/gestion_grados.php"; ?>
+            <div class="w-100">
+                <?php
+                // Lógica limpia: Cargamos un SOLO archivo dependiendo del clic en el sidebar
+                if ($active === 'panel' || $active === 'dashboard') {
+                    include_once '../utils/dashboard.php';
+                } elseif ($active === 'usuarios') {
+                    include_once '../utils/gestion_usuarios.php';
+                } elseif ($active === 'grados') {
+                    include_once '../utils/gestion_grados.php';
+                } elseif ($active === 'estudiantes') {
+                    include_once '../utils/gestion_estudiantes.php';
+                } elseif ($active === 'docentes') {
+                    include_once '../utils/gestion_docentes.php';
+                }
+                ?>
+            </div>
+            <!-- Calificaciones -->
             <!-- Respaldo del Sistema -->
             <div class="tab-pane fade <?php echo ($active == 'respaldo') ? 'show active' : ''; ?>" id="vista-respaldo">
 

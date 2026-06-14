@@ -8,14 +8,20 @@
             <p class="text-muted mb-0">Gestione la estructura académica, turnos y asignaturas.</p>
         </div>
         <div class="d-flex gap-2">
-            <button class="btn btn-outline-success shadow-sm">
-                <i class="bi bi-journal-plus me-2"></i> Nueva Asignatura
-            </button>
-            <button class="btn btn-amarillo-institucional shadow-sm text-dark fw-semibold">
+            <button class="btn btn-amarillo-institucional shadow-sm text-dark fw-semibold" data-bs-toggle="modal" data-bs-target="#modalNuevoGrado">
                 <i class="bi bi-plus-circle-fill me-2"></i> Nuevo Grado
             </button>
         </div>
     </div>
+    <?php
+    if (isset($_SESSION['error_grado'])): ?>
+        <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm mb-4 small fw-bold d-flex align-items-center" role="alert">
+            <i class="bi bi-exclamation-octagon-fill me-2 fs-5"></i>
+            <div><?php echo $_SESSION['error_grado'];
+                    unset($_SESSION['error_grado']); ?></div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    <?php endif; ?>
     <!-- Filtros -->
     <div class="card border-0 shadow-sm mb-4 bg-white">
         <div class="card-body p-3">
@@ -137,14 +143,39 @@
                                             </button>
                                         </form>
                                         <!-- Botón de Eliminar Grado -->
-                                        <form method="POST" action="admin.view.php?tab=grados" class="d-inline">
-                                            <input type="hidden" name="accion" value="preparar_eliminar_grado">
-                                            <input type="hidden" name="id_seccion" value="<?php echo htmlspecialchars($fila['id_seccion'] ?? $fila['id_grado_seccion']); ?>">
+                                        <button type="button" class="btn btn-outline-danger btn-sm shadow-sm" title="Eliminar grado" data-bs-toggle="modal" data-bs-target="#modalEliminar_<?php echo $fila['id_seccion']; ?>">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
 
-                                            <button type="submit" class="btn btn-outline-danger btn-sm shadow-sm" title="Eliminar grado">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </form>
+                                        <div class="modal fade" id="modalEliminar_<?php echo $fila['id_seccion']; ?>" tabindex="-1" aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-centered">
+                                                <div class="modal-content border-0 shadow rounded-3">
+                                                    <div class="modal-body p-4 text-center bg-white rounded-3">
+
+                                                        <div class="bg-danger bg-opacity-10 rounded-circle d-inline-flex p-3 mb-3 mt-2">
+                                                            <i class="bi bi-exclamation-triangle-fill text-danger fs-1"></i>
+                                                        </div>
+
+                                                        <h5 class="fw-bold text-dark">¿Eliminar esta sección?</h5>
+                                                        <p class="text-muted small mb-4">
+                                                            Estás a punto de borrar <strong><?php echo htmlspecialchars($grado . ' ' . $seccion); ?></strong>.<br>
+                                                            Los estudiantes inscritos perderán su matrícula y quedarán libres en el sistema.
+                                                        </p>
+
+                                                        <form action="admin.view.php?tab=grados" method="POST" class="d-flex justify-content-center gap-2">
+                                                            <input type="hidden" name="accion" value="eliminar_grado">
+                                                            <input type="hidden" name="id_seccion" value="<?php echo $fila['id_seccion']; ?>">
+
+                                                            <button type="button" class="btn btn-light fw-bold shadow-sm px-4" data-bs-dismiss="modal">Cancelar</button>
+                                                            <button type="submit" class="btn btn-danger fw-bold shadow-sm px-4">
+                                                                <i class="bi bi-trash-fill me-1"></i> Sí, eliminar
+                                                            </button>
+                                                        </form>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
@@ -491,4 +522,69 @@
             </div>
         </div>
     <?php endif; ?>
+    <!-- Modal para añadir un Grado -->
+    <div class="modal fade" id="modalNuevoGrado" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow rounded-3">
+
+                <div class="modal-header border-bottom-0 pb-0 pt-4 px-4 bg-light rounded-top-3">
+                    <div class="d-flex align-items-center w-100">
+                        <div class="bg-warning bg-opacity-10 rounded-circle p-3 me-3 text-warning">
+                            <i class="bi bi-journal-plus fs-3"></i>
+                        </div>
+                        <div>
+                            <h5 class="modal-title fw-bold text-dark mb-1">Crear Nueva Sección</h5>
+                            <p class="text-muted small mb-0">Añade un grupo de estudio al catálogo académico</p>
+                        </div>
+                        <button type="button" class="btn-close ms-auto" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                </div>
+
+                <form action="admin.view.php?tab=grados" method="POST">
+                    <div class="modal-body p-4 bg-light">
+                        <input type="hidden" name="accion" value="guardar_nuevo_grado">
+
+                        <div class="mb-3">
+                            <label class="form-label text-muted small fw-bold text-uppercase">Nivel Académico / Grado</label>
+                            <select name="id_grado" class="form-select border-2 p-2" required>
+                                <option value="">-- Seleccione el Grado --</option>
+                                <?php
+                                // Obtenemos los grados agrupados para que no se repitan en el select
+                                // Tu controlador ya genera una lista base en la consulta principal
+                                $gradosUnicos = [];
+                                foreach ($listaGrados as $g) {
+                                    if (!in_array($g['id_grado'], array_column($gradosUnicos, 'id_grado'))) {
+                                        $gradosUnicos[] = $g;
+                                    }
+                                }
+                                foreach ($gradosUnicos as $grad):
+                                ?>
+                                    <option value="<?php echo $grad['id_grado']; ?>">
+                                        <?php echo htmlspecialchars($grad['nombre_grad'] . ' (' . $grad['modalidad'] . ' - ' . $grad['turno'] . ')'); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+
+                        <div class="mb-2">
+                            <label class="form-label text-muted small fw-bold text-uppercase">Letra / Identificador de Sección</label>
+                            <input type="text" name="nombre_sec" class="form-control border-2 p-2" placeholder="Ej: A, B, C o Única" maxlength="20" required>
+                            <div class="form-text text-muted small mt-1">
+                                El sistema validará automáticamente que esta sección no exista previamente en el mismo nivel.
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="modal-footer border-top-0 bg-light rounded-bottom-3 d-flex gap-2">
+                        <button type="button" class="btn btn-light shadow-sm text-muted fw-bold" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-warning shadow-sm px-4 fw-bold text-dark">
+                            <i class="bi bi-plus-circle-fill me-1"></i> Crear Sección
+                        </button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
 </div>
