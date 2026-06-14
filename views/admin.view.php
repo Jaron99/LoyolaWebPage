@@ -1,13 +1,7 @@
 <?php
-// Aseguramos que el usuario tenga rol de admin para acceder a esta página
-session_start();
-if (!isset($_SESSION["rol"]) || $_SESSION["rol"] != "admin") {
-    header("Location: login.php");
-    exit();
-}
 
 // Incluimos el modelo de administración para interactuar con la base de datos
-include_once "Models/admin.model.php";
+include_once "../models/admin.model.php";
 $adminModel = new Admin();
 
 // Obtenemos los datos globales para el dashboard y los combos
@@ -29,270 +23,15 @@ $filtrorol = isset($_GET['rol']) ? $_GET['rol'] : "";
 $busquedaUsuarios = isset($_GET['busquedaUsuarios']) ? $_GET['busquedaUsuarios'] : "";
 $usuarios = $adminModel->getUsuarios($filtrorol, $busquedaUsuarios); // Trae los usuarios filtrados
 
-//PROCESAR FORMULARIOS
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['accion'])) {
 
-    // Acción: Editar Contraseña
-    if ($_POST['accion'] == 'editar_password') {
-        $usuarioAEditar = $_POST['usuario_edit'];
-        $nuevaPassword = $_POST['nueva_password'];
-
-        // Llamamos a la función del modelo
-        $adminModel->cambiarcontrasena($usuarioAEditar, $nuevaPassword);
-
-        // Recargamos la página limpiamente
-        header("Location: sistema_admin.php?tab=usuarios");
-        exit();
-    }
-
-    //Acción: Bloquear Usuario
-    if ($_POST['accion'] == 'bloquear_usuario') {
-        $usuario = $_POST['usuario_estado'];
-        $nuevoestado = $_POST['nuevoestado'];
-
-        $adminModel->bloquearUsuario($usuario, $nuevoestado);
-
-        header("Location: sistema_admin.php?tab=usuarios");
-        exit();
-    }
-
-    // Acción: Eliminar Usuario
-    if ($_POST['accion'] == 'eliminar_usuario') {
-        $usuario = $_POST['usuario_eliminar'];
-
-        $adminModel->eliminarUsuario($usuario);
-
-        header("Location: sistema_admin.php?tab=usuarios");
-        exit();
-
-        // Acción: Crear Nuevo Usuario
-    } elseif ($_POST['accion'] == 'crear_usuario') {
-        $nuevoUsuario = $_POST['nuevo_usuario'];
-        $nuevaPassword = $_POST['nueva_password'];
-        $rolUsuario = $_POST['nuevo_rol'];
-
-        $adminModel->crearUsuario($nuevoUsuario, $nuevaPassword, $rolUsuario);
-
-        header("Location: sistema_admin.php?tab=usuarios");
-        exit();
-    }
-}
 ?>
-
-<!DOCTYPE html>
-<html lang="es">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal San Ignacio - Panel de Administración</title>
-    <link rel="icon" type="image/png" href="Imagenes/Logo.png">
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-
-    <!-- Estilos Personalizados -->
-    <style>
-        :root {
-            --verde-institucional: #006a28;
-            --amarillo-institucional: #ffd709;
-        }
-
-        body {
-            background-color: #f8f9fa;
-            overflow-x: hidden;
-        }
-
-        /* --- BARRA LATERAL (SIDEBAR) --- */
-        .sidebar {
-            background-color: var(--verde-institucional);
-            min-height: 100vh;
-            width: 260px;
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 1000;
-            transition: all 0.3s ease-in-out;
-        }
-
-        .sidebar-logo {
-            width: 80px;
-            height: 80px;
-            object-fit: contain;
-            background-color: white;
-            border-radius: 50%;
-            padding: 5px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        .nav-pills .nav-link {
-            color: rgba(255, 255, 255, 0.8);
-            margin-bottom: 5px;
-            font-weight: 500;
-            padding: 12px 20px;
-            border-radius: 0 25px 25px 0;
-            margin-right: 15px;
-        }
-
-        .nav-pills .nav-link:hover {
-            color: white;
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .nav-pills .nav-link.active {
-            background-color: var(--amarillo-institucional);
-            color: #000;
-            font-weight: bold;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .main-content {
-            margin-left: 260px;
-            width: calc(100% - 260px);
-            transition: all 0.3s ease-in-out;
-        }
-
-        .topbar {
-            background-color: white;
-            border-bottom: 1px solid #dee2e6;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
-        }
-
-        .text-verde-institucional {
-            color: var(--verde-institucional) !important;
-        }
-
-        .btn-amarillo-institucional {
-            background-color: var(--amarillo-institucional);
-            border-color: var(--amarillo-institucional);
-            color: #000;
-            font-weight: bold;
-            transition: all 0.2s;
-        }
-
-        .btn-amarillo-institucional:hover {
-            background-color: #e6c208;
-            border-color: #e6c208;
-            color: #000;
-            transform: translateY(-2px);
-        }
-
-        .form-control:focus,
-        .form-select:focus {
-            border-color: var(--amarillo-institucional);
-            box-shadow: 0 0 0 0.25rem rgba(255, 215, 9, 0.25);
-        }
-
-        /* Insignias (Badges) de estado */
-        .badge-estudiante {
-            background-color: #0d6efd;
-            color: white;
-        }
-
-        .badge-profesor {
-            background-color: var(--verde-institucional);
-            color: white;
-        }
-
-        .badge-admin {
-            background-color: #212529;
-            color: white;
-        }
-
-        @media (max-width: 768px) {
-            .sidebar {
-                margin-left: -260px;
-            }
-
-            .sidebar.show {
-                margin-left: 0;
-            }
-
-            .main-content {
-                margin-left: 0;
-                width: 100%;
-            }
-        }
-    </style>
-</head>
-
-<body>
-    <!-- Barra Lateral -->
-    <div class="sidebar d-flex flex-column py-3" id="sidebar">
-        <!-- Logo y Titulo -->
-        <div class="text-center mb-4 mt-2">
-            <img src="Imagenes/Logo.png" alt="Logo" class="sidebar-logo mb-2">
-            <h5 class="fw-bold mb-0 text-white">Portal San Ignacio</h5>
-            <small class="text-white-50">Administración General</small>
-        </div>
-
-        <!-- Opciones de Navegación -->
-        <ul class="nav nav-pills flex-column mb-auto mt-2">
-            <li class="nav-item">
-                <a class="nav-link <?php echo ($active == 'panel') ? 'active' : ''; ?>" href="sistema_admin.php?tab=panel">
-                    <i class="bi bi-speedometer2 me-3"></i> Panel Principal
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link <?php echo ($active == 'usuarios') ? 'active' : ''; ?>" href="sistema_admin.php?tab=usuarios">
-                    <i class="bi bi-people-fill me-3"></i> Gestión de Usuarios
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link <?php echo ($active == 'grados') ? 'active' : ''; ?>" href="sistema_admin.php?tab=grados">
-                    <i class="bi bi-diagram-3-fill me-3"></i> Grados y Secciones
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link <?php echo ($active == 'respaldo') ? 'active' : ''; ?>" href="sistema_admin.php?tab=respaldo">
-                    <i class="bi bi-cloud-upload-fill me-3"></i> Respaldo del Sistema
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link <?php echo ($active == 'configuracion') ? 'active' : ''; ?>" href="sistema_admin.php?tab=configuracion">
-                    <i class="bi bi-gear-fill me-3"></i> Configuración del Sistema
-                </a>
-            </li>
-        </ul>
-    </div>
-
+    <?php include_once "../controllers/usuario.controller.php"; ?>    
+    <?php include_once "../utils/header.php"; ?>
+    <?php include_once "../utils/sidebar.php"; ?>
     <!-- Contenido Principal -->
     <div class="main-content" id="main-content">
-        <!-- Barra de Navegación -->
-        <nav class="navbar navbar-expand-lg topbar px-4 py-3 sticky-top">
-            <div class="container-fluid">
-                <div class="d-flex align-items-center">
-                    <button class="btn btn-outline-secondary d-md-none me-3" type="button" id="sidebarToggle">
-                        <i class="bi bi-list fs-5"></i>
-                    </button>
-                    <h5 class="mb-0 text-verde-institucional fw-bold d-none d-md-block">Dirección Académica</h5>
-                </div>
-
-                <div class="d-flex align-items-center">
-                    <div class="text-end me-3 d-none d-sm-block">
-                        <div class="fw-bold text-dark" style="line-height: 1.2;">Admin</div>
-                        <small class="text-muted">Administrador del Sistema</small>
-                    </div>
-                    <div class="dropdown">
-                        <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-person-circle fs-2 text-verde-institucional"></i>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end shadow border-0">
-                            <li><a class="dropdown-item py-2" href="#"><i class="bi bi-person me-2"></i> Mi Perfil</a></li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            <li><a class="dropdown-item py-2 text-danger fw-bold" href="logout.php"><i class="bi bi-box-arrow-right me-2"></i> Cerrar Sesión</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </nav>
-
+        <?php include_once "../utils/topbar.php"; ?>
+    
         <!-- Contenido de las Vistas -->
         <div class="container-fluid p-4">
 
@@ -530,7 +269,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['accion'])) {
                                                         </button>
 
                                                         <?php if (strtolower($rol) != 'admin'): ?>
-                                                            <form method="POST" action="sistema_admin.php?tab=usuarios" class="d-inline">
+                                                            <form method="POST" action="../views/admin.view.php?tab=usuarios" class="d-inline">
 
                                                                 <input type="hidden" name="accion" value="bloquear_usuario">
                                                                 <input type="hidden" name="usuario_estado" value="<?php echo $user['usuario']; ?>">
@@ -546,7 +285,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['accion'])) {
                                                                 </button>
 
                                                             </form>
-                                                            <form method="POST" action="sistema_admin.php?tab=usuarios" class="d-inline">
+                                                            <!-- Modal para Eliminar Usuario -->
+                                                            <form method="POST" action="../views/admin.view.php" class="d-inline">
                                                                 <input type="hidden" name="accion" value="eliminar_usuario">
                                                                 <input type="hidden" name="usuario_eliminar" value="<?php echo $user['usuario']; ?>">
 
@@ -1070,14 +810,4 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['accion'])) {
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-    <script>
-        document.getElementById('sidebarToggle').addEventListener('click', function() {
-            document.getElementById('sidebar').classList.toggle('show');
-        });
-    </script>
-
-</body>
-
-</html>
+<?php include_once "../utils/footer.php"; ?>    

@@ -12,6 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($user && $user->num_rows > 0) {
         $fila = $user->fetch_assoc();
         $hash_guardado = $fila['contrasena'];
+        
         if (password_verify($contrasena, $hash_guardado)|| $contrasena === $hash_guardado) {
             
             $_SESSION['id_usuario'] = $fila['id_usuario'];
@@ -19,24 +20,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['rol'] = $fila['rol'];
 
             if ($fila['rol'] === 'admin') {
-                header("Location: /views/admin.view.php");
+                header("Location: ../views/admin.view.php");
+                exit();
             } elseif ($fila['rol'] === 'docente') {
-                header("Location: /views/docente.view.php");
+                header("Location: ../views/docente.view.php");
+                exit();
             } elseif ($fila['rol'] === 'estudiante') {
-                header("Location: /views/estudiante.view.php");
-            }else {
+                header("Location: ../views/estudiante.view.php");
+                exit();
+            } else {
                 $_SESSION['error'] = "Rol de usuario no reconocido en el sistema.";
-                header("Location: /views/login.view.php");
+                header("Location: ../views/login.view.php");
                 exit();
             }
         } else {
             $_SESSION['error'] = "Contraseña incorrecta.";
-            header("Location: /views/login.view.php");
+            header("Location: ../views/login.view.php");
             exit();
         }
     } else {
         $_SESSION['error'] = "El usuario no existe.";
-        header("Location: /views/login.view.php");
+        header("Location: ../views/login.view.php");
         exit();
     }
 }
