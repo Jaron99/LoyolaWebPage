@@ -40,6 +40,9 @@ include_once __DIR__ . "/../controllers/admin.controller.php";
                 ?>
             </div>
             <!-- Calificaciones -->
+            <?php include_once "../utils/calificaciones.php"; ?>
+            <!-- Evaluación (Tabla de Notas) -->
+            <?php include_once "../utils/evaluacion.php"; ?>          
             <!-- Respaldo del Sistema -->
             <div class="tab-pane fade <?php echo ($active == 'respaldo') ? 'show active' : ''; ?>" id="vista-respaldo">
 
@@ -117,7 +120,6 @@ include_once __DIR__ . "/../controllers/admin.controller.php";
                 </div>
 
             </div>
-
             <!-- Configuración del Sistema -->
             <div class="tab-pane fade <?php echo ($active == 'configuracion') ? 'show active' : ''; ?>" id="vista-configuracion">
 
