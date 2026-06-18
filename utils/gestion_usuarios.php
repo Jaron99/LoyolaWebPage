@@ -1,4 +1,28 @@
 <?php include_once __DIR__ . "/../controllers/admin.controller.php"; ?>
+<style>
+    /* Separar los controles de DataTables de la tabla para que no se vean amontonados */
+    .dataTables_wrapper .row:first-child {
+        margin-bottom: 15px;
+    }
+
+    .dataTables_wrapper .row:last-child {
+        margin-top: 15px;
+    }
+
+    /* Estilizar el input de búsqueda automático para que parezca de Bootstrap 5 */
+    .dataTables_filter input {
+        border: 2px solid #dee2e6;
+        border-radius: 8px;
+        padding: 5px 10px;
+        transition: all 0.2s;
+    }
+
+    .dataTables_filter input:focus {
+        border-color: var(--amarillo-institucional);
+        outline: none;
+        box-shadow: 0 0 0 0.25rem rgba(255, 215, 9, 0.25);
+    }
+</style>
 <!-- Gestión de Usuarios -->
 <div class="tab-pane fade <?php echo ($active == 'usuarios') ? 'show active' : ''; ?>" id="vista-usuarios">
     <!-- Título -->
@@ -12,47 +36,11 @@
             <i class="bi bi-plus-lg me-1"></i> Nuevo Usuario
         </button>
     </div>
-    <!-- Filtros -->
-    <div class="card border-0 shadow-sm mb-4 bg-white">
-        <div class="card-body p-3">
-            <form method="GET" action="admin.view.php">
-                <input type="hidden" name="tab" value="usuarios">
-                <div class="row g-2">
-                    <div class="col-md-4">
-                        <!-- Filtro por Rol -->
-                        <select name="rol" class="form-select border-0 bg-light" onchange="this.form.submit()">
-                            <option value="">Todos los Roles</option>
-                            <?php
-                            if (!empty($listaRoles)):
-                                foreach ($listaRoles as $rol_db):
-                                    $seleccionado = ($filtrorol == $rol_db) ? 'selected' : '';
-                            ?>
-                                    <option value="<?php echo htmlspecialchars($rol_db); ?>" <?php echo $seleccionado; ?>>
-                                        <?php echo ucfirst(htmlspecialchars($rol_db)); ?>
-                                    </option>
-                            <?php
-                                endforeach;
-                            endif;
-                            ?>
-                        </select>
-                    </div>
-                    <!-- Filtro por Nombre de Usuario -->
-                    <div class="col-md-8">
-                        <div class="input-group">
-                            <span class="input-group-text border-0 bg-light text-muted"><i class="bi bi-search"></i></span>
-                            <input type="text" name="busquedaUsuarios" class="form-control border-0 bg-light" placeholder="Buscar por nombre de usuario..." value="<?php echo htmlspecialchars($busquedaUsuarios); ?>">
-                            <button type="submit" class="btn text-white px-4 shadow-sm" style="background-color: var(--verde-institucional);">Buscar</button>
-                        </div>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
     <!-- Tabla de Usuarios -->
     <div class="card border-0 shadow-sm">
-        <div class="card-body p-0">
+        <div class="card-body p-4">
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
+                <table class="table table-hover align-middle mb-0 tabla-datatable" style="width:100%">
                     <thead class="table-light text-muted" style="font-size: 0.85rem; text-transform: uppercase;">
                         <tr>
                             <th class="ps-4 py-3">Usuario / Acceso</th>

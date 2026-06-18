@@ -33,12 +33,17 @@ $id_asig = $_GET['id_asig'] ?? '';
 $id_seccion = $_GET['id_seccion'] ?? '';
 $nombre_asig = $_GET['nombre_asig'] ?? '';
 
+// Leer la configuración real desde la base de datos
+require_once __DIR__ . "/../models/configuracion.model.php";
+$configModel = new Configuracion();
+$db_ajustes = $configModel->obtenerAjustes();
+
 // CONFIGURACIÓN DE BLOQUEO: true = Editable, false = Bloqueado (Solo lectura)
 $parciales_status = [
-    'I Parcial'   => true,
-    'II Parcial'  => false,
-    'III Parcial' => false,
-    'IV Parcial'  => false
+    'I Parcial'   => $db_ajustes['editar_i_parcial'] ?? false,
+    'II Parcial'  => $db_ajustes['editar_ii_parcial'] ?? false,
+    'III Parcial' => $db_ajustes['editar_iii_parcial'] ?? false,
+    'IV Parcial'  => $db_ajustes['editar_iv_parcial'] ?? false
 ];
 $lista_parciales = ['I Parcial', 'II Parcial', 'III Parcial', 'IV Parcial'];
 

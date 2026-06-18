@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once '../models/usuarios.model.php';
+require_once '../models/configuracion.model.php'; // <-- 1. Agregamos el modelo de configuración
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $correo = $_POST['usuario'] ?? '';
@@ -12,7 +13,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($user && $user->num_rows > 0) {
         $fila = $user->fetch_assoc();
         $hash_guardado = $fila['contrasena'];
+
+        $objConfig = new Configuracion(); // Usa Configuracion() si así nombraste la clase en tu modelo
+        $ajustes_db = $objConfig->obtenerAjustes();
         
+        // Verificamos si el mantenimiento está activo
+        if (isset($ajustes_db['modo_mantenimiento']) && $ajustes_db['modo_mantenimiento'] == true) {
+            // Si está activo y el rol de esta fila NO es admin, lo rebotamos
+            if ($fila['rol'] !== 'admin') {
+                $_SESSION['error'] = "El sistema está en mantenimiento. Vuelva pronto.";
+                header("Location: ../views/login.view.php");
+                exit();
+            }
+        }
+
         if (password_verify($contrasena, $hash_guardado)|| $contrasena === $hash_guardado) {
             
             $_SESSION['id_usuario'] = $fila['id_usuario'];
