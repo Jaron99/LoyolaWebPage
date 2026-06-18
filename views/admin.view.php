@@ -24,7 +24,6 @@ include_once __DIR__ . "/../controllers/admin.controller.php";
 
 // 1. Obtenemos qué pestaña quiere ver el usuario (por defecto dashboard)
 $active = $_GET['tab'] ?? 'panel';
-$_GET['tab'] = 'active';
 ?>
 
 <?php include_once "../utils/header.php"; ?>

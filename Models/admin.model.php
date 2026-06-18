@@ -11,21 +11,10 @@ class Admin
         $this->conexion = Conexion::connect();
     }
 
-    //Funcion para obtener todos los usuarios con filtros de rol y busqueda
-    public function getUsuarios($filtrorol = "", $busquedaUsuarios = "")
+
+    public function getUsuarios()
     {
         $sql = "SELECT * FROM usuarios WHERE 1=1";
-        // Si el usuario selecciona un rol en el combo box
-        if (!empty($filtrorol)) {
-            $rolSeguro = $this->conexion->real_escape_string($filtrorol);
-            $sql .= " AND rol = '$rolSeguro'";
-        }
-
-        // Si el usuario escribe algo en el buscador
-        if (!empty($busquedaUsuarios)) {
-            $busquedaSegura = $this->conexion->real_escape_string($busquedaUsuarios);
-            $sql .= " AND usuario LIKE '%$busquedaSegura%'";
-        }
 
         $result = $this->conexion->query($sql);
         $lista = [];
@@ -69,7 +58,6 @@ class Admin
             }
             return $resumen;
         }
-        //si ocurre un error, puedes manejarlo aquí
         return ['total_alumnos' => 0, 'total_profesores' => 0, 'periodo_actual' => 'N/A'];
     }
 
@@ -89,23 +77,9 @@ class Admin
     }
 
     // Función para obtener grados y secciones con filtros 
-    public function obtenerGradosSeccion($filtronivel = "", $busqueda = "")
+    public function obtenerGradosSeccion()
     {
         $sql = "SELECT * FROM vw_grados_secciones where 1=1"; // Empezamos con una condición siempre verdadera para facilitar la concatenación
-
-        // Si el usuario selecciono una modalidad en el combo box
-        if (!empty($filtronivel)) {
-            $nivelseguro = $this->conexion->real_escape_string($filtronivel);
-            $sql .= " AND modalidad = '$nivelseguro'";
-        }
-
-        // Si el usuario escribe algo en el buscador
-        if (!empty($busqueda)) {
-            $busquedasegura = $this->conexion->real_escape_string($busqueda);
-            $sql .= " AND (nombre_grad LIKE '%$busquedasegura%' OR 
-                        nombre_sec LIKE '%$busquedasegura%' OR 
-                        modalidad LIKE '%$busquedasegura%')";
-        }
 
         $result = $this->conexion->query($sql);
 
@@ -118,46 +92,5 @@ class Admin
         return $lista;
     }
 
-
-    //CRUD de Alumnos y Profesores
-    public function crearAlumno()
-    {
-        // Aquí iría la lógica para crear un alumno
-    }
-    public function editarAlumno()
-    {
-        // Aquí iría la lógica para editar un alumno
-    }
-
-    public function eliminarAlumno()
-    {
-        // Aquí iría la lógica para eliminar un alumno
-    }
-    public function crearProfesor()
-    {
-        // Aquí iría la lógica para crear un profesor
-    }
-    public function editarProfesor()
-    {
-        // Aquí iría la lógica para editar un profesor
-    }
-    public function eliminarProfesor()
-    {
-        // Aquí iría la lógica para eliminar un profesor
-    }
-
-    //CRUD de Grados y Secciones
-    public function crearGradoSeccion()
-    {
-        // Aquí iría la lógica para crear un grado y sección
-    }
-    public function editarGradoSeccion()
-    {
-        // Aquí iría la lógica para editar un grado y sección
-    }
-    public function eliminarGradoSeccion()
-    {
-        // Aquí iría la lógica para eliminar un grado y sección
-    }
 
 }

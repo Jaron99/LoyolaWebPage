@@ -10,27 +10,6 @@ class Estudiantes
         $this->conexion = Conexion::connect();
     }
 
-    public function obtenerEstudiantes($nombres_buscar = "")
-    {
-        $sql = "CALL sp_buscar_alumno(?)";
-        $stmt = $this->conexion->prepare($sql);
-        $stmt->bind_param("s", $nombres_buscar);
-        $stmt->execute();
-
-        $resultado = $stmt->get_result();
-
-        $estudiantes = [];
-        if ($resultado) {
-            while ($fila = $resultado->fetch_assoc()) {
-                $estudiantes[] = $fila;
-            }
-            while ($this->conexion->next_result()) {
-                $this->conexion->use_result();
-            }
-        }
-        return $estudiantes;
-    }
-
     public function registrarEstudiante($nombres, $apellidos, $telefono, $direccion, $fecha_nac, $cod_mined)
     {
         // Ahora el procedimiento recibe 6 parámetros

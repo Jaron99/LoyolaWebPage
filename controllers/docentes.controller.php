@@ -50,12 +50,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// ==========================================
-// 2. CARGAR DATOS PARA LA VISTA (GET)
-// ==========================================
 $listaDocentes = [];
-$termino_busqueda = isset($_GET['buscar_docente']) ? trim($_GET['buscar_docente']) : '';
 
 // Llamamos al modelo para traer la lista filtrada
-$listaDocentes = $docentesModel->obtenerDocentesFiltrados($termino_busqueda);
+$listaDocentes = $docentesModel->obtenerDocentesFiltrados();
 ?>

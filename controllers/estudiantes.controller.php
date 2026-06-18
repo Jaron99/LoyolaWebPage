@@ -53,21 +53,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
 }
-// ==========================================
-// 2. CARGAR DATOS PARA LA VISTA (GET)
-// ==========================================
-// ==========================================
-// 2. CARGAR DATOS PARA LA VISTA (GET)
-// ==========================================
+
 $listaEstudiantes = [];
 
 // 1. Cargamos la lista de grados para el Combobox
 $listaSecciones = $estudiantesModel->obtenerSeccionesComboBox();
 
-// 2. Atrapamos lo que el usuario haya escrito o seleccionado
-$termino_busqueda = isset($_GET['buscar_alumno']) ? trim($_GET['buscar_alumno']) : '';
-$filtro_seccion = isset($_GET['filtro_seccion']) ? trim($_GET['filtro_seccion']) : '';
-
-// 3. Traemos a los estudiantes aplicando los filtros desde la nueva VISTA SQL
-$listaEstudiantes = $estudiantesModel->obtenerEstudiantesFiltrados($termino_busqueda, $filtro_seccion);
+$listaEstudiantes = $estudiantesModel->obtenerEstudiantesFiltrados();
 ?>
