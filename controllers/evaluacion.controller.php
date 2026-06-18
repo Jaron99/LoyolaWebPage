@@ -35,7 +35,7 @@ $nombre_asig = $_GET['nombre_asig'] ?? '';
 
 // CONFIGURACIÓN DE BLOQUEO: true = Editable, false = Bloqueado (Solo lectura)
 $parciales_status = [
-    'I Parcial'   => false,
+    'I Parcial'   => true,
     'II Parcial'  => false,
     'III Parcial' => false,
     'IV Parcial'  => false
