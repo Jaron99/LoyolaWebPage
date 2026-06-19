@@ -3,9 +3,6 @@ require_once __DIR__ . "/../models/docentes.model.php";
 
 $docentesModel = new Docentes();
 
-// ==========================================
-// 1. PROCESAR ACCIONES DE FORMULARIOS (POST)
-// ==========================================
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     // REGISTRAR DOCENTE

@@ -1,16 +1,17 @@
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
     <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
         $(document).ready(function() {
-            // SEGURO 1: Solo ejecutar DataTables si la tabla realmente existe en esta pantalla
             if ($('.tabla-datatable').length > 0) {
                 $('.tabla-datatable').DataTable({
-                    "language": {
-                        "url": "https://cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json"
-                    },
+                    "language": { "url": "https://cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json" },
                     "pageLength": 10, 
                     "lengthMenu": [5, 10, 25, 50], 
                     "ordering": true, 
@@ -19,7 +20,7 @@
             }
         });
 
-        // SEGURO 2: Solo agregar el clic del menú si el botón existe
+        // Script del menú lateral
         let btnSidebar = document.getElementById('sidebarToggle');
         if (btnSidebar) {
             btnSidebar.addEventListener('click', function() {
@@ -27,5 +28,63 @@
             });
         }
     </script>
+
+    <?php
+    $swal_title = "";
+    $swal_text = "";
+    $swal_icon = "";
+
+    // 1. Detectar mensajes por URL ($_GET['msg'])
+    if (isset($_GET['msg'])) {
+        switch ($_GET['msg']) {
+            case 'ajustes_guardados':
+                $swal_title = "¡Éxito!";
+                $swal_text = "La configuración del sistema se guardó correctamente.";
+                $swal_icon = "success";
+                break;
+            case 'restauracion_exitosa':
+                $swal_title = "¡Sistema Restaurado!";
+                $swal_text = "La base de datos se restauró con éxito desde el archivo de respaldo.";
+                $swal_icon = "success";
+                break;
+            case 'error_restauracion':
+                $swal_title = "Error Crítico";
+                $swal_text = "El archivo SQL está corrupto o no se pudo procesar.";
+                $swal_icon = "error";
+                break;
+            case 'archivo_invalido':
+                $swal_title = "Formato Incorrecto";
+                $swal_text = "Por favor, suba únicamente archivos con extensión .sql";
+                $swal_icon = "warning";
+                break;
+            // ¡Puedes ir agregando más 'cases' para el futuro (ej. 'alumno_guardado')!
+        }
+    }
+
+    // 2. Detectar errores de sesión ($_SESSION['error'])
+    if (isset($_SESSION['error'])) {
+        $swal_title = "¡Atención!";
+        $swal_text = $_SESSION['error'];
+        $swal_icon = "error";
+        unset($_SESSION['error']); // Limpiamos el error para que no vuelva a salir
+    }
+
+    // Si hay un mensaje preparado, disparamos la alerta con JavaScript
+    if ($swal_title !== "") {
+        echo "<script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    title: '{$swal_title}',
+                    text: '{$swal_text}',
+                    icon: '{$swal_icon}',
+                    confirmButtonColor: '#0d6efd',
+                    customClass: {
+                        popup: 'rounded-4 shadow-lg'
+                    }
+                });
+            });
+        </script>";
+    }
+    ?>
 </body>
 </html>

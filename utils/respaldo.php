@@ -1,4 +1,4 @@
-<?php 
+<?php
 // Solicitamos el historial directamente para pintarlo en la vista
 require_once __DIR__ . "/../models/respaldo.model.php";
 $modeloResp = new Respaldo();
@@ -19,7 +19,7 @@ $historial = $modeloResp->obtenerHistorial();
             <div class="card border-0 shadow-sm h-100" style="border-top: 5px solid var(--verde-institucional);">
                 <form action="../controllers/respaldo.controller.php" method="POST" class="card-body p-4 text-center d-flex flex-column m-0">
                     <input type="hidden" name="action" value="backup">
-                    
+
                     <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mx-auto mb-4" style="width: 80px; height: 80px;">
                         <i class="bi bi-cloud-arrow-down-fill fs-1 text-success"></i>
                     </div>
@@ -35,9 +35,9 @@ $historial = $modeloResp->obtenerHistorial();
 
         <div class="col-md-6">
             <div class="card border-0 shadow-sm h-100" style="border-top: 5px solid #dc3545;">
-                <form action="../controllers/respaldo.controller.php" method="POST" enctype="multipart/form-data" class="card-body p-4 text-center d-flex flex-column m-0">
+                <form id="formRestaurar" action="../controllers/respaldo.controller.php" method="POST" enctype="multipart/form-data" class="card-body p-4 text-center d-flex flex-column m-0">
                     <input type="hidden" name="action" value="restore">
-                    
+
                     <div class="bg-danger bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mx-auto mb-4" style="width: 80px; height: 80px;">
                         <i class="bi bi-cloud-arrow-up-fill fs-1 text-danger"></i>
                     </div>
@@ -48,7 +48,7 @@ $historial = $modeloResp->obtenerHistorial();
                         <input type="file" name="archivo_sql" class="form-control bg-light border-0 py-2" id="archivoSql" accept=".sql" required>
                     </div>
 
-                    <button type="submit" class="btn btn-outline-danger px-4 py-2 w-100 shadow-sm rounded-3 fw-bold" onclick="return confirm('¿Está seguro? Esta acción borrará la información actual y la reemplazará por la del archivo.');">
+                    <button type="button" id="btnRestaurar" class="btn btn-outline-danger px-4 py-2 w-100 shadow-sm rounded-3 fw-bold">
                         <i class="bi bi-upload me-2"></i> Subir y Restaurar
                     </button>
                 </form>
@@ -62,17 +62,17 @@ $historial = $modeloResp->obtenerHistorial();
         </div>
         <div class="card-body p-4 pt-2">
             <ul class="list-group list-group-flush border-0">
-                
+
                 <?php if (empty($historial)): ?>
                     <li class="list-group-item text-center text-muted py-4 border-0">No hay respaldos generados todavía.</li>
                 <?php else: ?>
-                    <?php foreach ($historial as $item): 
+                    <?php foreach ($historial as $item):
                         // Calculamos cuántos días han pasado
                         $fecha_db = new DateTime($item['fecha_accion']);
                         $hoy = new DateTime();
                         $diferencia = $hoy->diff($fecha_db)->days;
                         $texto_dias = ($diferencia == 0) ? "Hoy" : "Hace $diferencia días";
-                        
+
                         // Cambiamos el icono dependiendo si fue Descarga (Backup) o Subida (Restore)
                         $icono = ($item['tipo_accion'] == 'BACKUP') ? 'bi-file-earmark-code-fill text-success' : 'bi-arrow-counterclockwise text-danger';
                     ?>
@@ -91,3 +91,29 @@ $historial = $modeloResp->obtenerHistorial();
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const btnRestaurar = document.getElementById('btnRestaurar');
+    if (btnRestaurar) {
+        btnRestaurar.addEventListener('click', function() {
+            Swal.fire({
+                title: '¿Está completamente seguro?',
+                text: 'Esta acción borrará toda la información actual de la base de datos y la reemplazará por la del archivo de respaldo. ¡Esta acción no se puede deshacer!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: '<i class="bi bi-exclamation-triangle"></i> Sí, Restaurar Sistema',
+                cancelButtonText: 'Cancelar',
+                customClass: { popup: 'rounded-4 shadow-lg' }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Si el usuario dijo que sí, enviamos el formulario
+                    document.getElementById('formRestaurar').submit();
+                }
+            });
+        });
+    }
+});
+</script>
