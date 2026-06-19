@@ -20,10 +20,10 @@ if (!isset($_SESSION['usuario']) || $_SESSION['rol'] != 'docente') {
     header("Location: login.view.php");
     exit();
 }
-include_once __DIR__ . "/../controllers/admin.controller.php";
+include_once __DIR__ . "/../controllers/login_docente.controller.php";
 
 // 1. Obtenemos qué pestaña quiere ver el usuario (por defecto dashboard)
-$active = $_GET['tab'] ?? 'panel';
+$active = $_GET['tab'] ?? 'paneldocente';
 ?>
 
 <?php include_once "../utils/header.php"; ?>
@@ -37,14 +37,14 @@ $active = $_GET['tab'] ?? 'panel';
             <div class="w-100">
                 <?php
                 // ENRUTADOR SEGURO PARA DOCENTES
-                if ($active === 'dashboard') {
-                    include_once '../utils/dashboard.php';
+                if ($active === 'paneldocente') {
+                    include_once '../utils/dashboard_docente.php';
                 } elseif ($active === 'calificaciones') {
                     include_once '../utils/calificaciones.php'; // ¡Reciclado!
                 } elseif ($active === 'evaluacion') {
                     include_once '../utils/evaluacion.php'; // ¡Reciclado!
                 } else {
-                    include_once '../utils/dashboard.php';
+                    include_once '../utils/dashboard_docente.php';
                 }
                 ?>
             </div>

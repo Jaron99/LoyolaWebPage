@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $objConfig = new Configuracion(); // Usa Configuracion() si así nombraste la clase en tu modelo
         $ajustes_db = $objConfig->obtenerAjustes();
-        
+
         // Verificamos si el mantenimiento está activo
         if (isset($ajustes_db['modo_mantenimiento']) && $ajustes_db['modo_mantenimiento'] == true) {
             // Si está activo y el rol de esta fila NO es admin, lo rebotamos
@@ -27,11 +27,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
-        if (password_verify($contrasena, $hash_guardado)|| $contrasena === $hash_guardado) {
-            
-            $_SESSION['id_usuario'] = $fila['id_usuario'];
-            $_SESSION['usuario'] = $fila['usuario'];
-            $_SESSION['rol'] = $fila['rol'];
+        if (password_verify($contrasena, $hash_guardado) || $contrasena === $hash_guardado) {
+
+            $_SESSION['id_usuario']    = $fila['id_usuario'];
+            $_SESSION['usuario']       = $fila['usuario'];
+            $_SESSION['rol']           = $fila['rol'];
+            $_SESSION['id_referencia'] = $fila['id_referencia'];
 
             if ($fila['rol'] === 'admin') {
                 header("Location: ../views/admin.view.php");
@@ -58,4 +59,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
 }
-?>

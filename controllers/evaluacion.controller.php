@@ -25,9 +25,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     exit();
 }
 
-// ==========================================
-// 2. CARGAR ALUMNOS PARA LA VISTA (Vía GET)
-// ==========================================
 $alumnos = [];
 $id_asig = $_GET['id_asig'] ?? '';
 $id_seccion = $_GET['id_seccion'] ?? '';

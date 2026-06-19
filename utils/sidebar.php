@@ -87,13 +87,13 @@ if (!isset($_SESSION['rol'])) {
 
         <?php elseif ($_SESSION['rol'] == 'docente'): ?>
             <li class="nav-item">
-                <a class="nav-link <?php echo ($active == 'panel') ? 'active' : ''; ?>" href="docente.view.php?tab=panel">
-                    <i class="bi bi-easel-fill me-3"></i> Mi Panel
+                <a class="nav-link <?php echo ($active == 'paneldocente') ? 'active' : ''; ?>" href="docente.view.php?tab=paneldocente">
+                    <i class="bi bi-speedometer2 me-3"></i> Panel Principal
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link <?php echo ($active == 'calificaciones') ? 'active' : ''; ?>" href="docente.view.php?tab=calificaciones">
-                    <i class="bi bi-journal-check me-3"></i> Ingreso de Notas
+                    <i class="bi bi-journal-check me-3"></i> Calificaciones
                 </a>
             </li>
 
