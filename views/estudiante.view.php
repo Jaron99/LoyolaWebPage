@@ -38,6 +38,8 @@ $_GET['tab'] = $active;
                 <?php
                 if ($active === 'panelestudiante') {
                     include_once '../utils/dashboard_estudiante.php';
+                } elseif ($active === 'reportes') {
+                    include_once '../utils/reportes.php';
                 } else {
                     include_once '../utils/dashboard_estudiante.php';
                 }

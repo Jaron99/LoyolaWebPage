@@ -52,6 +52,8 @@ $active = $_GET['tab'] ?? 'panel';
                     include_once '../utils/respaldo.php';
                 } elseif ($active === 'configuracion' || $active === 'ajustes') {
                     include_once '../utils/configuracion.php';
+                } elseif ($active === 'reportes') {
+                    include_once '../utils/reportes.php';
                 } else {
                     // Fallback por si escriben mal la URL
                     include_once '../utils/dashboard.php';

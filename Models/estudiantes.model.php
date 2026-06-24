@@ -63,7 +63,7 @@ class Estudiantes
         } else {
             $sql = "SELECT * FROM vw_lista_alumnos
                     WHERE (nombres LIKE ? OR apellidos LIKE ?) 
-                    ORDER BY apellidos ASC, nombres ASC";
+                    ORDER BY id_seccion ASC";
             $stmt = $this->conexion->prepare($sql);
             $stmt->bind_param("ss", $busqueda_param, $busqueda_param);
         }
@@ -96,8 +96,8 @@ class Estudiantes
         return $resultado ? $resultado->fetch_assoc() : null;
     }
 
-public function obtenerNotasEstudiante($id_alumno) {
-        // Usamos una consulta Pivot para transformar tus filas de 'parcial' en columnas
+    public function obtenerNotasEstudiante($id_alumno)
+    {
         $sql = "SELECT 
                     asig.nombre_asig,
                     MAX(CASE WHEN e.parcial = 'I Parcial' THEN e.nota END) as corte1,
@@ -117,10 +117,23 @@ public function obtenerNotasEstudiante($id_alumno) {
                 LEFT JOIN evaluacion e ON asig.id_asig = e.id_asig AND m.id_matricula = e.id_matricula
                 WHERE m.id_alumno = ?
                 GROUP BY asig.id_asig, asig.nombre_asig";
-                
+
         $stmt = $this->conexion->prepare($sql);
         $stmt->bind_param("i", $id_alumno);
         $stmt->execute();
         return $stmt->get_result();
     }
+
+    public function ObtenerAnoLectivo() {
+        $sql = "SELECT * FROM `periodo_academico` WHERE estado = 'Activo';";
+
+        $resultado = $this->conexion->query($sql);
+    
+    if ($resultado && $resultado->num_rows > 0) {
+        $fila = $resultado->fetch_assoc();
+        return $fila['anio']; // Retorna solo el nombre del año (ej: "2026")
+    }
+    
+    return date('Y');
+    } 
 }

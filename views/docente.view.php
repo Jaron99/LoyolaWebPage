@@ -38,6 +38,8 @@ $active = $_GET['tab'] ?? 'paneldocente';
                     include_once '../utils/calificaciones.php'; 
                 } elseif ($active === 'evaluacion') {
                     include_once '../utils/evaluacion.php';
+                } elseif ($active === 'reportes') {
+                    include_once '../utils/reportes.php';
                 } else {
                     include_once '../utils/dashboard_docente.php';
                 }

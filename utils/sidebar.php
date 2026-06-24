@@ -105,6 +105,11 @@ if (!isset($_SESSION['rol'])) {
             </li>
 
         <?php endif; ?>
-
+        <hr class="text-white-50">
+        <li class="nav-item">
+            <a class="nav-link <?php echo (isset($_GET['tab']) && $_GET['tab'] == 'reportes') ? 'active' : ''; ?>" href="?tab=reportes">
+                <i class="bi bi-file-earmark-pdf"></i> Reportes Oficiales
+            </a>
+        </li>
     </ul>
 </div>
