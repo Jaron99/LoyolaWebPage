@@ -1,7 +1,7 @@
 <?php
 session_start();
 require_once '../models/usuarios.model.php';
-require_once '../models/configuracion.model.php'; // <-- 1. Agregamos el modelo de configuración
+require_once '../models/configuracion.model.php'; 
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $correo = $_POST['usuario'] ?? '';
@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $fila = $user->fetch_assoc();
         $hash_guardado = $fila['contrasena'];
 
-        $objConfig = new Configuracion(); // Usa Configuracion() si así nombraste la clase en tu modelo
+        $objConfig = new Configuracion(); 
         $ajustes_db = $objConfig->obtenerAjustes();
 
         // Verificamos si el mantenimiento está activo

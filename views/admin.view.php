@@ -21,8 +21,6 @@ if (!isset($_SESSION['usuario']) || $_SESSION['rol'] != 'admin') {
     exit();
 }
 include_once __DIR__ . "/../controllers/admin.controller.php";
-
-// 1. Obtenemos qué pestaña quiere ver el usuario (por defecto dashboard)
 $active = $_GET['tab'] ?? 'panel';
 ?>
 

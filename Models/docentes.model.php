@@ -56,4 +56,42 @@ class Docentes
         $stmt->bind_param("s", $id);
         return $stmt->execute();
     }
+
+    // Función para obtener los KPIs del Dashboard del Docente
+    public function obtenerEstadisticasDocente($id_profesor) {
+        $estadisticas = [
+            'total_alumnos' => 0,
+            'total_asignaturas' => 0,
+            'total_secciones' => 0
+        ];
+
+        // 1. Contar Asignaturas y Secciones únicas del profesor
+        $sql1 = "SELECT COUNT(id_asig) as asignaturas, COUNT(DISTINCT id_seccion) as secciones 
+                 FROM asignatura WHERE id_profesor = ?";
+        $stmt1 = $this->conexion->prepare($sql1);
+        $stmt1->bind_param("i", $id_profesor);
+        $stmt1->execute();
+        $resultado1 = $stmt1->get_result()->fetch_assoc();
+        
+        if ($resultado1) {
+            $estadisticas['total_asignaturas'] = $resultado1['asignaturas'];
+            $estadisticas['total_secciones'] = $resultado1['secciones'];
+        }
+
+        // 2. Contar Total de Alumnos únicos que le dan clases (unidos por sus secciones)
+        $sql2 = "SELECT COUNT(DISTINCT m.id_alumno) as alumnos 
+                 FROM matricula m 
+                 INNER JOIN asignatura a ON m.id_seccion = a.id_seccion 
+                 WHERE a.id_profesor = ?";
+        $stmt2 = $this->conexion->prepare($sql2);
+        $stmt2->bind_param("i", $id_profesor);
+        $stmt2->execute();
+        $resultado2 = $stmt2->get_result()->fetch_assoc();
+        
+        if ($resultado2) {
+            $estadisticas['total_alumnos'] = $resultado2['alumnos'];
+        }
+
+        return $estadisticas;
+    }
 }

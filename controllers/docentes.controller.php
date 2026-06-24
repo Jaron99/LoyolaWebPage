@@ -51,4 +51,16 @@ $listaDocentes = [];
 
 // Llamamos al modelo para traer la lista filtrada
 $listaDocentes = $docentesModel->obtenerDocentesFiltrados();
+$objDocente = new Docentes(); // O como se llame tu clase en el modelo
+
+// Recordá que en login.controller.php guardamos el id_referencia (que es el ID real del profesor/alumno)
+$id_del_profesor = $_SESSION['id_referencia']; 
+
+// Llamamos al modelo para obtener los números reales
+$estadisticas_docente = $objDocente->obtenerEstadisticasDocente($id_del_profesor);
+
+// Extraemos las variables para que la Vista las use limpiamente
+$total_alumnos = $estadisticas_docente['total_alumnos'];
+$total_asignaturas = $estadisticas_docente['total_asignaturas'];
+$total_secciones = $estadisticas_docente['total_secciones'];
 ?>

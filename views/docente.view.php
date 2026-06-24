@@ -1,7 +1,6 @@
 <?php
 ob_start();
 session_start();
-// --- INICIO: LÍMITE DE INACTIVIDAD (10 MINUTOS) ---
 $tiempo_limite = 600;
 if (isset($_SESSION['ultimo_acceso'])) {
     $tiempo_transcurrido = time() - $_SESSION['ultimo_acceso'];
@@ -14,15 +13,12 @@ if (isset($_SESSION['ultimo_acceso'])) {
         exit();
     }
 }
-$_SESSION['ultimo_acceso'] = time(); // Actualiza el reloj cada vez que el usuario hace clic o recarga
-// --- FIN: LÍMITE DE INACTIVIDAD ---
+$_SESSION['ultimo_acceso'] = time();
 if (!isset($_SESSION['usuario']) || $_SESSION['rol'] != 'docente') {
     header("Location: login.view.php");
     exit();
 }
 include_once __DIR__ . "/../controllers/login_docente.controller.php";
-
-// 1. Obtenemos qué pestaña quiere ver el usuario (por defecto dashboard)
 $active = $_GET['tab'] ?? 'paneldocente';
 ?>
 
@@ -36,13 +32,12 @@ $active = $_GET['tab'] ?? 'paneldocente';
         <div class="tab-content" id="v-pills-tabContent">
             <div class="w-100">
                 <?php
-                // ENRUTADOR SEGURO PARA DOCENTES
                 if ($active === 'paneldocente') {
                     include_once '../utils/dashboard_docente.php';
                 } elseif ($active === 'calificaciones') {
-                    include_once '../utils/calificaciones.php'; // ¡Reciclado!
+                    include_once '../utils/calificaciones.php'; 
                 } elseif ($active === 'evaluacion') {
-                    include_once '../utils/evaluacion.php'; // ¡Reciclado!
+                    include_once '../utils/evaluacion.php';
                 } else {
                     include_once '../utils/dashboard_docente.php';
                 }
