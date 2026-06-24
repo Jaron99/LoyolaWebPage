@@ -43,13 +43,6 @@ $rol = $_SESSION['rol'];
                             <input type="hidden" name="tipo" value="seccion">
                             <select name="id_seccion" class="form-select mb-3" required>
                                 <option value="">Seleccione una sección...</option>
-                                <?php
-                                // Aquí haces un pequeño query para listar las secciones
-                                $res = $conexion->query("SELECT id_seccion, CONCAT(nombre_grad, ' ', nombre_sec) as nombre FROM vw_secciones");
-                                while ($s = $res->fetch_assoc()) {
-                                    echo "<option value='" . $s['id_seccion'] . "'>" . $s['nombre'] . "</option>";
-                                }
-                                ?>
                             </select>
                             <button type="submit" class="btn btn-outline-purple w-100 fw-bold">
                                 <i class="bi bi-download"></i> Generar PDF
