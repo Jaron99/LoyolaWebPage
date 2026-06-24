@@ -4,6 +4,9 @@ if (!isset($_SESSION['rol'])) {
     exit("Acceso denegado.");
 }
 $rol = $_SESSION['rol'];
+
+require_once __DIR__ . '/../models/conexion.model.php';
+$conexion = Conexion::connect();
 ?>
 
 <div class="tab-pane fade show active" id="vista-reportes">
@@ -43,10 +46,25 @@ $rol = $_SESSION['rol'];
                             <input type="hidden" name="tipo" value="seccion">
                             <select name="id_seccion" class="form-select mb-3" required>
                                 <option value="">Seleccione una sección...</option>
+                                <?php
+                                // Usamos el nombre correcto de la vista (vw_grados_secciones) 
+                                // y aseguramos que solo traiga grados que ya tienen una sección asignada
+                                $sql = "SELECT id_seccion, CONCAT(nombre_grad, ' ', nombre_sec) AS nombre 
+                                        FROM vw_grados_secciones 
+                                        WHERE id_seccion IS NOT NULL";
+
+                                $res = $conexion->query($sql);
+
+                                if ($res && $res->num_rows > 0) {
+                                    while ($s = $res->fetch_assoc()) {
+                                        echo "<option value='" . htmlspecialchars($s['id_seccion']) . "'>" . htmlspecialchars($s['nombre']) . "</option>";
+                                    }
+                                } else {
+                                    echo "<option value=''>No hay secciones disponibles</option>";
+                                }
+                                ?>
                             </select>
-                            <button type="submit" class="btn btn-outline-purple w-100 fw-bold">
-                                <i class="bi bi-download"></i> Generar PDF
-                            </button>
+                            <button class="btn btn-outline-success w-100 fw-bold"><i class="bi bi-download"></i> Generar PDF</button>
                         </form>
                     </div>
                 </div>
@@ -59,9 +77,14 @@ $rol = $_SESSION['rol'];
                             <i class="bi bi-person-badge fs-2"></i>
                         </div>
                         <h5 class="fw-bold text-dark">Boletín Individual</h5>
-                        <p class="text-muted small">Genera el boletín oficial de un estudiante específico.</p>
-                        <input type="text" class="form-control mb-3" placeholder="Buscar código o nombre...">
-                        <button class="btn btn-outline-success w-100 fw-bold"><i class="bi bi-download"></i> Generar PDF</button>
+                        <p class="text-muted small">Genera el boletín oficial de un estudiante específico mediante su Código.</p>
+                        <form action="../controllers/reportes.controller.php" method="GET" target="_blank">
+                            <input type="hidden" name="tipo" value="individual">
+                            <input type="text" name="codigo_mined" class="form-control mb-3" placeholder="Ingrese el Código MINED..." required>
+                            <button type="submit" class="btn btn-outline-success w-100 fw-bold">
+                                <i class="bi bi-download"></i> Generar PDF
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -82,13 +105,41 @@ $rol = $_SESSION['rol'];
                         </div>
                         <p class="text-muted">Descargue el acta oficial de calificaciones de las asignaturas que usted imparte.</p>
 
-                        <form action="#" method="GET">
+                        <form action="../controllers/reportes.controller.php" method="GET" target="_blank">
+                            <input type="hidden" name="tipo" value="seccion_materia">
                             <label class="form-label fw-bold">Seleccione su asignatura/sección:</label>
-                            <select class="form-select mb-4">
-                                <option>10mo Grado A - Matemáticas</option>
-                                <option>11mo Grado B - Matemáticas</option>
+                            <select name="datos_asignatura" class="form-select mb-4" required>
+                                <option value="">Seleccione una opción...</option>
+                                <?php
+                                // Obtenemos el ID del profesor desde la sesión (ej. DOC-001)
+                                $id_profesor = $_SESSION['id_referencia'] ?? '';
+
+                                // Consultamos las asignaturas y secciones que le pertenecen a este profesor
+                                $sql_docente = "
+                                    SELECT s.id_seccion, a.nombre_asig, CONCAT(g.nombre_grad, ' ', s.nombre_sec, ' - ', a.nombre_asig) as nombre_opcion 
+                                    FROM asignatura a 
+                                    JOIN grado g ON a.id_grado = g.id_grado 
+                                    JOIN seccion s ON g.id_grado = s.id_grado 
+                                    WHERE a.id_profesor = ?
+                                    ORDER BY g.id_grado, s.nombre_sec, a.nombre_asig";
+
+                                $stmtDoc = $conexion->prepare($sql_docente);
+                                $stmtDoc->bind_param("s", $id_profesor);
+                                $stmtDoc->execute();
+                                $resDoc = $stmtDoc->get_result();
+
+                                if ($resDoc && $resDoc->num_rows > 0) {
+                                    while ($doc_sec = $resDoc->fetch_assoc()) {
+                                        // Guardamos el id_seccion y el nombre de la asignatura separados por un "|"
+                                        $valor = $doc_sec['id_seccion'] . '|' . $doc_sec['nombre_asig'];
+                                        echo "<option value='" . htmlspecialchars($valor) . "'>" . htmlspecialchars($doc_sec['nombre_opcion']) . "</option>";
+                                    }
+                                } else {
+                                    echo "<option value=''>No tiene asignaturas asignadas</option>";
+                                }
+                                ?>
                             </select>
-                            <button type="button" class="btn btn-outline-purple w-100 fw-bold p-2" style="color: #6f42c1; border-color: #6f42c1;">
+                            <button type="submit" class="btn btn-outline-purple w-100 fw-bold p-2" style="color: #6f42c1; border-color: #6f42c1; transition: 0.3s;" onmouseover="this.style.backgroundColor='#6f42c1'; this.style.color='white';" onmouseout="this.style.backgroundColor='transparent'; this.style.color='#6f42c1';">
                                 <i class="bi bi-file-earmark-pdf-fill"></i> Descargar Acta
                             </button>
                         </form>
@@ -109,8 +160,7 @@ $rol = $_SESSION['rol'];
                         </div>
                         <h4 class="fw-bold text-dark mb-2">Mi Boletín Oficial</h4>
                         <p class="text-muted mb-4">Descarga tu historial de calificaciones y notas en formato PDF, listo para imprimir.</p>
-
-                        <a href="#" target="_blank" class="btn btn-danger btn-lg w-100 fw-bold rounded-pill shadow-sm">
+                        <a href="../controllers/reportes.controller.php?tipo=mi_boletin" target="_blank" class="btn btn-danger btn-lg w-100 fw-bold rounded-pill shadow-sm">
                             <i class="bi bi-cloud-arrow-down-fill me-2"></i> Descargar Historial
                         </a>
                     </div>
