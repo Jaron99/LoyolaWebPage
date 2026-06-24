@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . "/../.env.php";
+require_once __DIR__ . "../.env.php";
 
 class Conexion {
     public static function connect() {
