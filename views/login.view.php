@@ -117,25 +117,25 @@ $sesion_activa = isset($_SESSION['rol']) && isset($_SESSION['usuario']);
                 </div>
 
                 <?php if ($sesion_activa): ?>
-                    
+
                     <?php
-                    // Determinamos a qué panel regresará si presiona "Cancelar"
-                    $ruta_panel = 'estudiante.view.php';
-                    if ($_SESSION['rol'] == 'admin') $ruta_panel = 'admin.view.php';
-                    if ($_SESSION['rol'] == 'docente') $ruta_panel = 'docente.view.php';
+                    // Determinamos a qué panel debe ir el usuario según su rol
+                    $ruta_panel = 'estudiante.view.php?tab=panelestudiante';
+                    if ($_SESSION['rol'] == 'admin') $ruta_panel = 'admin.view.php?tab=panel';
+                    if ($_SESSION['rol'] == 'docente') $ruta_panel = 'docente.view.php?tab=paneldocente'; // ¡AQUÍ!
                     ?>
 
                     <div class="modal-content border shadow-sm rounded-3 mt-3 text-start">
                         <div class="modal-header border-bottom px-4 py-3 bg-light rounded-top-3">
                             <h4 class="modal-title fw-bold text-dark mb-0" style="font-size: 1.1rem;">Confirmar</h4>
                         </div>
-                        
+
                         <div class="modal-body px-4 py-4">
                             <p class="text-muted mb-0" style="font-size: 0.95rem;">
                                 Tienes una sesion activa como <strong><?php echo strtoupper(htmlspecialchars($_SESSION['usuario'])); ?></strong>, cierra la sesion antes de ingresar a otra cuenta.
                             </p>
                         </div>
-                        
+
                         <div class="modal-footer border-top px-4 py-3 bg-light rounded-bottom-3 d-flex justify-content-end gap-2 m-0">
                             <a href="<?php echo $ruta_panel; ?>" class="btn btn-secondary shadow-sm">
                                 Cancelar
@@ -145,56 +145,56 @@ $sesion_activa = isset($_SESSION['rol']) && isset($_SESSION['usuario']);
                             </a>
                         </div>
                     </div>
-        <?php else: ?>
-            <p class="text-muted small mb-3 text-center">Portal de Acceso</p>
+                <?php else: ?>
+                    <p class="text-muted small mb-3 text-center">Portal de Acceso</p>
 
-            <?php if ($error): ?>
-                <div class="alert alert-danger text-center small fw-bold py-2 mb-3" role="alert">
-                    <i class="bi bi-exclamation-triangle-fill me-2"></i> <?php echo $error; ?>
-                </div>
-            <?php endif; ?>
+                    <?php if ($error): ?>
+                        <div class="alert alert-danger text-center small fw-bold py-2 mb-3" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i> <?php echo $error; ?>
+                        </div>
+                    <?php endif; ?>
 
-            <form action="../controllers/login.controller.php" method="POST">
-                <div class="mb-3">
-                    <label for="username" class="form-label text-muted small mb-1">Usuario</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-person"></i></span>
-                        <input type="text" class="form-control" id="username" name="usuario" placeholder="Ej. admin" required>
+                    <form action="../controllers/login.controller.php" method="POST">
+                        <div class="mb-3">
+                            <label for="username" class="form-label text-muted small mb-1">Usuario</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                <input type="text" class="form-control" id="username" name="usuario" placeholder="Ej. admin" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password" class="form-label text-muted small mb-1">Contraseña</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                                <input type="password" class="form-control" id="password" name="contrasena" placeholder="••••••••" required>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-institucional-amarillo btn-lg" style="font-size: 1rem;">ENTRAR A MI CUENTA</button>
+                        </div>
+                    </form>
+
+                    <div class="text-center mt-3">
+                        <a href="#" class="text-institucional-verde small text-decoration-none">¿Olvidaste tu contraseña?</a>
                     </div>
+                <?php endif; ?>
+
+                <hr class="my-4 text-muted">
+                <div class="text-center mt-2 text-muted" style="font-size: 0.75rem;">
+                    © 2026 Colegio Parroquial San Ignacio de Loyola.<br>
+                    Managua, Nicaragua.
                 </div>
 
-                <div class="mb-3">
-                    <label for="password" class="form-label text-muted small mb-1">Contraseña</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                        <input type="password" class="form-control" id="password" name="contrasena" placeholder="••••••••" required>
-                    </div>
-                </div>
-
-                <div class="d-grid gap-2 mt-4">
-                    <button type="submit" class="btn btn-institucional-amarillo btn-lg" style="font-size: 1rem;">ENTRAR A MI CUENTA</button>
-                </div>
-            </form>
-
-            <div class="text-center mt-3">
-                <a href="#" class="text-institucional-verde small text-decoration-none">¿Olvidaste tu contraseña?</a>
             </div>
-        <?php endif; ?>
-
-        <hr class="my-4 text-muted">
-        <div class="text-center mt-2 text-muted" style="font-size: 0.75rem;">
-            © 2026 Colegio Parroquial San Ignacio de Loyola.<br>
-            Managua, Nicaragua.
         </div>
-
-        </div>
-    </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // Forzar recarga si la página se muestra desde la caché del historial (botón "Atrás")
-        window.addEventListener('pageshow', function (event) {
+        window.addEventListener('pageshow', function(event) {
             // event.persisted indica si la página se cargó desde la memoria caché del navegador
             if (event.persisted) {
                 window.location.reload();

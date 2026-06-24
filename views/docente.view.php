@@ -18,7 +18,7 @@ if (!isset($_SESSION['usuario']) || $_SESSION['rol'] != 'docente') {
     header("Location: login.view.php");
     exit();
 }
-include_once __DIR__ . "/../controllers/login_docente.controller.php";
+include_once __DIR__ . "/../controllers/docentes.controller.php";
 $active = $_GET['tab'] ?? 'paneldocente';
 ?>
 

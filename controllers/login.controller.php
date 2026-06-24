@@ -17,9 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $objConfig = new Configuracion(); 
         $ajustes_db = $objConfig->obtenerAjustes();
 
-        // Verificamos si el mantenimiento está activo
         if (isset($ajustes_db['modo_mantenimiento']) && $ajustes_db['modo_mantenimiento'] == true) {
-            // Si está activo y el rol de esta fila NO es admin, lo rebotamos
             if ($fila['rol'] !== 'admin') {
                 $_SESSION['error'] = "El sistema está en mantenimiento. Vuelva pronto.";
                 header("Location: ../views/login.view.php");
@@ -27,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
-        if (password_verify($contrasena, $hash_guardado) || $contrasena === $hash_guardado) {
+        if (password_verify($contrasena, $hash_guardado)) {
 
             $_SESSION['id_usuario']    = $fila['id_usuario'];
             $_SESSION['usuario']       = $fila['usuario'];

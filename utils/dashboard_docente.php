@@ -14,17 +14,13 @@ $parciales = [
     'IV Parcial'  => isset($ajustes['editar_iv_parcial']) && $ajustes['editar_iv_parcial']
 ];
 
-// ---------------------------------------------------------
-// TODO: Reemplazar con consultas reales a tu base de datos
-// usando tu modelo (ej. $docenteModel->contarAlumnos(...))
-// ---------------------------------------------------------
-$total_alumnos = 45;      // Alumnos sumando todas sus secciones
-$total_asignaturas = 3;   // Materias que imparte
-$total_secciones = 2;     // Grupos a su cargo
-// ---------------------------------------------------------
+// Nos aseguramos que las variables del controlador existan por seguridad
+$total_alumnos = $total_alumnos ?? 0;
+$total_asignaturas = $total_asignaturas ?? 0;
+$total_secciones = $total_secciones ?? 0;
 ?>
 
-<div class="tab-pane fade <?php echo (isset($_GET['tab']) && $_GET['tab'] == 'paneldocente') ? 'show active' : ''; ?>" id="vista-dashboard">
+<div class="tab-pane fade <?php echo (!isset($_GET['tab']) || $_GET['tab'] === 'paneldocente' || $_GET['tab'] === '') ? 'show active' : ''; ?>" id="vista-dashboard">
     
     <div class="mb-4">
         <h2 class="fw-bold text-dark mb-1">¡Bienvenido, Profesor(a) <?php echo htmlspecialchars($_SESSION['usuario']); ?>!</h2>
@@ -133,7 +129,8 @@ $total_secciones = 2;     // Grupos a su cargo
                         </a>
                         
                         <a href="#" class="btn btn-outline-success text-start p-3 fw-bold rounded-3">
-                            <i class="bi bi-file-earmark-pdf fs-4 me-3 align-middle"></i> Imprimir Reportes                        </a>
+                            <i class="bi bi-file-earmark-pdf fs-4 me-3 align-middle"></i> Imprimir Reportes
+                        </a>
                     </div>
                 </div>
             </div>

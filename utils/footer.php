@@ -30,61 +30,59 @@
     </script>
 
     <?php
-    $swal_title = "";
-    $swal_text = "";
-    $swal_icon = "";
+$swal_title = "";
+$swal_text  = "";
+$swal_icon  = "";
 
-    // 1. Detectar mensajes por URL ($_GET['msg'])
-    if (isset($_GET['msg'])) {
-        switch ($_GET['msg']) {
-            case 'ajustes_guardados':
-                $swal_title = "¡Éxito!";
-                $swal_text = "La configuración del sistema se guardó correctamente.";
-                $swal_icon = "success";
-                break;
-            case 'restauracion_exitosa':
-                $swal_title = "¡Sistema Restaurado!";
-                $swal_text = "La base de datos se restauró con éxito desde el archivo de respaldo.";
-                $swal_icon = "success";
-                break;
-            case 'error_restauracion':
-                $swal_title = "Error Crítico";
-                $swal_text = "El archivo SQL está corrupto o no se pudo procesar.";
-                $swal_icon = "error";
-                break;
-            case 'archivo_invalido':
-                $swal_title = "Formato Incorrecto";
-                $swal_text = "Por favor, suba únicamente archivos con extensión .sql";
-                $swal_icon = "warning";
-                break;
-            // ¡Puedes ir agregando más 'cases' para el futuro (ej. 'alumno_guardado')!
-        }
+if (isset($_GET['msg'])) {
+    switch ($_GET['msg']) {
+        case 'ajustes_guardados':
+            $swal_title = "¡Éxito!";
+            $swal_text  = "La configuración del sistema se guardó correctamente.";
+            $swal_icon  = "success";
+            break;
+        case 'restauracion_exitosa':
+            $swal_title = "¡Sistema Restaurado!";
+            $swal_text  = "La base de datos se restauró con éxito desde el archivo de respaldo.";
+            $swal_icon  = "success";
+            break;
+        case 'error_restauracion':
+            $swal_title = "Error Crítico";
+            $swal_text  = "El archivo SQL está corrupto o no se pudo procesar.";
+            $swal_icon  = "error";
+            break;
+        case 'archivo_invalido':
+            $swal_title = "Formato Incorrecto";
+            $swal_text  = "Por favor, suba únicamente archivos con extensión .sql";
+            $swal_icon  = "warning";
+            break;
     }
+}
 
-    // 2. Detectar errores de sesión ($_SESSION['error'])
-    if (isset($_SESSION['error'])) {
-        $swal_title = "¡Atención!";
-        $swal_text = $_SESSION['error'];
-        $swal_icon = "error";
-        unset($_SESSION['error']); // Limpiamos el error para que no vuelva a salir
-    }
+if (isset($_SESSION['error'])) {
+    $swal_title = "¡Atención!";
+    $swal_text  = $_SESSION['error'];
+    $swal_icon  = "error";
+    unset($_SESSION['error']);
+}
 
-    // Si hay un mensaje preparado, disparamos la alerta con JavaScript
-    if ($swal_title !== "") {
-        echo "<script>
-            document.addEventListener('DOMContentLoaded', function() {
-                Swal.fire({
-                    title: '{$swal_title}',
-                    text: '{$swal_text}',
-                    icon: '{$swal_icon}',
-                    confirmButtonColor: '#0d6efd',
-                    customClass: {
-                        popup: 'rounded-4 shadow-lg'
-                    }
-                });
+// ✅ json_encode escapa automáticamente todo — elimina XSS por completo
+if ($swal_title !== "") {
+    $js_title = json_encode($swal_title);
+    $js_text  = json_encode($swal_text);
+    $js_icon  = json_encode($swal_icon);
+    echo "<script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({
+                title: {$js_title},
+                text: {$js_text},
+                icon: {$js_icon},
+                confirmButtonColor: '#0d6efd',
+                customClass: { popup: 'rounded-4 shadow-lg' }
             });
-        </script>";
-    }
-    ?>
+        });
+    </script>";
+}
+?>
 </body>
 </html>

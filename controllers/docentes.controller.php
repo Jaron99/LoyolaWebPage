@@ -48,19 +48,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $listaDocentes = [];
+if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'admin') {
+    $listaDocentes = $docentesModel->obtenerDocentesFiltrados();
+}
 
-// Llamamos al modelo para traer la lista filtrada
-$listaDocentes = $docentesModel->obtenerDocentesFiltrados();
-$objDocente = new Docentes(); // O como se llame tu clase en el modelo
+// 2. SI ES DOCENTE: Cargamos sus estadísticas del Dashboard
+if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'docente') {
+    // El ID real del profesor viene de login.controller.php
+    $id_del_profesor = $_SESSION['id_referencia'] ?? 0; 
 
-// Recordá que en login.controller.php guardamos el id_referencia (que es el ID real del profesor/alumno)
-$id_del_profesor = $_SESSION['id_referencia']; 
+    // Llamamos al modelo para obtener los números reales
+    $estadisticas_docente = $docentesModel->obtenerEstadisticasDocente($id_del_profesor);
 
-// Llamamos al modelo para obtener los números reales
-$estadisticas_docente = $objDocente->obtenerEstadisticasDocente($id_del_profesor);
-
-// Extraemos las variables para que la Vista las use limpiamente
-$total_alumnos = $estadisticas_docente['total_alumnos'];
-$total_asignaturas = $estadisticas_docente['total_asignaturas'];
-$total_secciones = $estadisticas_docente['total_secciones'];
+    // Extraemos las variables para que la Vista las use limpiamente
+    $total_alumnos = $estadisticas_docente['total_alumnos'] ?? 0;
+    $total_asignaturas = $estadisticas_docente['total_asignaturas'] ?? 0;
+    $total_secciones = $estadisticas_docente['total_secciones'] ?? 0;
+}
 ?>
